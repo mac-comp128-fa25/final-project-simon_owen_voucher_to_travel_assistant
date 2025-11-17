@@ -1,5 +1,6 @@
 import java.util.Map;
 import java.util.Set;
+import java.util.HashMap;
 
 public class Player {
 
@@ -9,6 +10,7 @@ public class Player {
     private int trains = 45;
 
     public Player() {
+        hand = new HashMap<>();
     }
 
     public int getScore() {

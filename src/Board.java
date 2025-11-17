@@ -1,11 +1,13 @@
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Deque;
 
 public class Board {
 
     private Map<City,Integer> cityIndexMap;
     private Graph graph;
     private int numVertices;
+    private TrainCard[] shop = new TrainCard[5]; // Add edge cases to reshuffle the shop
 
     public Board() {
         this.graph = new Graph();
@@ -95,6 +97,34 @@ public class Board {
         graph.addTrack(cityIndexMap.get(City.VANCOUVER), cityIndexMap.get(City.SEATTLE), 1, TrainColor.WILD, 2);
 
 
+    }
+
+    public RouteCard drawRouteCard(Player player) {
+        return null;
+    }
+
+    public void discardRouteCard(Player player, RouteCard card) {
+
+    }
+
+    public void spendTrainCard(Player player, TrainCard card) {
+
+    }
+
+    public TrainCard drawTopTrainCard(Player player) {
+        return null;
+    }
+
+    public TrainCard drawTrainCard(Player player) {
+        return null;
+    }
+
+    public void replaceTrainRow() {
+
+    }
+
+    public Deque<Card> shuffle(Deque<Card> deck) {
+        return null;
     }
 
     
