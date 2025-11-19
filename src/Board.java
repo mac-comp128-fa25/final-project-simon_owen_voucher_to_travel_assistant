@@ -1,6 +1,9 @@
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.PriorityQueue;
 import java.util.Deque;
+import java.util.ArrayList;
 
 public class Board {
 
@@ -14,6 +17,10 @@ public class Board {
         numVertices = graph.getNumVertices();
         cityIndexMap = new HashMap<>(numVertices);
         addCityIndices();
+    }
+
+    public int getCityIndex(City city) {
+        return cityIndexMap.get(city);
     }
 
     private void addCityIndices() {
@@ -97,6 +104,30 @@ public class Board {
         graph.addTrack(cityIndexMap.get(City.VANCOUVER), cityIndexMap.get(City.SEATTLE), 1, TrainColor.WILD, 2);
 
 
+    }
+
+    public ArrayList<int[]> getShortestPath(Graph graph, City startingCity, City endingCity) {
+        //Initialize PQ
+        PriorityQueue<ArrayList<int[]>> shortestPathQueue = new PriorityQueue<>(new CityWeightComparator());
+        //create starting city-weight pair and add to PQ
+        int[] startingCityWeight = new int[] {cityIndexMap.get(startingCity), 0};
+        ArrayList<int[]> startingCityPath = new ArrayList<>();
+        startingCityPath.add(startingCityWeight);
+        shortestPathQueue.add(startingCityPath);
+        //Dijkstra's Alg
+        while(!shortestPathQueue.isEmpty()) {
+            ArrayList<int[]> currentCityPath = shortestPathQueue.remove();
+            ArrayList<int[]> outBoundPaths = graph.getTracksOutOfCityIndex(currentCityPath.getLast()[0]);
+            for(int[] path : outBoundPaths) {
+                ArrayList<int[]> nextCityPath = (ArrayList<int[]>) currentCityPath.clone();
+                nextCityPath.add(path);
+                shortestPathQueue.add(nextCityPath);
+                if(path[0] == cityIndexMap.get(endingCity)) {
+                    return nextCityPath;
+                }
+            }
+        }
+        return null;
     }
 
     public RouteCard drawRouteCard(Player player) {

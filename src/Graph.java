@@ -4,7 +4,7 @@ import java.util.PriorityQueue;
 
 public class Graph {
 
-    private ArrayList<Track>[][] graph;
+    public ArrayList<Track>[][] graph;
     private int numVertices = City.values().length;
     
     public Graph() {
@@ -27,25 +27,14 @@ public class Graph {
         return numVertices;
     }
 
-    /*
-     * Find shortest path from start city to end city. 
-     * BFS with priority queue and priority based on total track length (minheap)
-     * 
-     */
-     public List<City> getShortestPath(City startingCity, City endingCity) {
-        PriorityQueue<List<Track>> shortestTrackQueue = new PriorityQueue<>(new TrackListComparator());
-        // get adjacent cities to starting city
-        // enqueue all tracks
-        // while loop:
-        //    dequeue first track
-        //    get all adjacent cities from destination of track
-        //    enqueue all tracks from each adjacent city, add these tracks to a list containing the 
-        //    
-        // RESEARCH DIJKSTRA'S ALGORITHM
-
-
-     }
-
-     
-
+    public ArrayList<int[]> getTracksOutOfCityIndex(int index) {
+        ArrayList<int[]> cityWeight = new ArrayList<>();
+        for(int i = 0; i < City.values().length; i++) {
+            if(graph[index][i].size() != 0) {
+                int[] cityWeightPair = new int[]{i,graph[index][i].getFirst().getLength()};
+                cityWeight.add(cityWeightPair);
+            }
+        }
+        return cityWeight;
+    }
 }
