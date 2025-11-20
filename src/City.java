@@ -2,6 +2,7 @@ public enum City {
     ATLANTA,
     BOSTON,
     CALGARY,
+    CHARLESTON,
     CHICAGO,
     DALLAS,
     DENVER,

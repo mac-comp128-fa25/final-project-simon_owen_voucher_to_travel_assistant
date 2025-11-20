@@ -9,6 +9,15 @@ public class Graph {
     
     public Graph() {
         graph = (ArrayList<Track>[][]) new ArrayList[numVertices][numVertices];
+        initalizeGraph();
+    }
+
+    private void initalizeGraph() {
+        for(int i = 0; i < numVertices; i++) {
+            for(int j = 0; j < numVertices; j++) {
+                graph[i][j] = new ArrayList<>();
+            }
+        }
     }
 
     public void addTrack(int i, int j, int length, TrainColor color) {
