@@ -12,6 +12,10 @@ public class Graph {
         initalizeGraph();
     }
 
+    public List<Track> getTracks(int i, int j) {
+        return graph[i][j];
+    }
+
     private void initalizeGraph() {
         for(int i = 0; i < numVertices; i++) {
             for(int j = 0; j < numVertices; j++) {
@@ -47,7 +51,7 @@ public class Graph {
         List<int[]> cityWeight = new ArrayList<>();
         for(int i = 0; i < City.values().length; i++) {
             if(!graph[index][i].isEmpty()) {
-                int[] cityWeightPair = new int[]{i,graph[index][i].getFirst().getLength()};
+                int[] cityWeightPair = new int[]{i,graph[index][i].getFirst().length};
                 cityWeight.add(cityWeightPair);
             }
         }

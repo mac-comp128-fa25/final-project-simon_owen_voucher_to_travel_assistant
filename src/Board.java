@@ -317,7 +317,7 @@ public class Board {
         }
     }
 
-    public TrainCard drawTrainCardFromShop(Player player, TrainColor color) {
+    public TrainColor drawTrainCardFromShop(Player player, TrainColor color) {
         return replaceCardInShop(color);
     }
 
@@ -330,14 +330,18 @@ public class Board {
         return -1;
     }
 
-    private TrainCard replaceCardInShop(TrainColor color) {
+    public List<Track> getTracks(City city1, City city2) {
+        return graph.getTracks(cityIndexMap.get(city1), cityIndexMap.get(city2));
+    }
+
+    private TrainColor replaceCardInShop(TrainColor color) {
         int indexOfCardBeingDrawn = findColorInShop(color);
         if(indexOfCardBeingDrawn < 0) {
             return null;
         }
         TrainCard card = shop[indexOfCardBeingDrawn];
         shop[indexOfCardBeingDrawn] = (TrainCard) trainCardDeck.pop();
-        return card;
+        return card.color;
     }
 
     public List<Integer> dijkstraSearch(City startCity, City endCity) {
@@ -403,9 +407,9 @@ public class Board {
 
     }
 
-    public void spendTrainCards(TrainCard card, int quantity) {
+    public void spendTrainCards(TrainColor color, int quantity) {
         for(int i = 0; i < quantity; i++) {
-            trainCardDiscard.add(card);
+            trainCardDiscard.add(new TrainCard(color));
         }
     }
 

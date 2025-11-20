@@ -10,6 +10,8 @@ public class Assistant {
         this.board = board;
     }
 
+    
+
     private static void printCityPath(List<Integer> path, Board gameBoard) {
         for(Integer index : path) {
             System.out.println(gameBoard.getCityFromIndex(index));
