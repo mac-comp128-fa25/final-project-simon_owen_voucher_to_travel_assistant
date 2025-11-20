@@ -27,8 +27,8 @@ public class Graph {
         return numVertices;
     }
 
-    public ArrayList<int[]> getTracksOutOfCityIndex(int index) {
-        ArrayList<int[]> cityWeight = new ArrayList<>();
+    public List<int[]> getTracksOutOfCityIndex(int index) {
+        List<int[]> cityWeight = new ArrayList<>();
         for(int i = 0; i < City.values().length; i++) {
             if(graph[index][i].size() != 0) {
                 int[] cityWeightPair = new int[]{i,graph[index][i].getFirst().getLength()};

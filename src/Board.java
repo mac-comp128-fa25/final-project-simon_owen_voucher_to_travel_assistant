@@ -1,9 +1,12 @@
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Deque;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Board {
 
@@ -106,28 +109,56 @@ public class Board {
 
     }
 
-    public ArrayList<int[]> getShortestPath(Graph graph, City startingCity, City endingCity) {
-        //Initialize PQ
-        PriorityQueue<ArrayList<int[]>> shortestPathQueue = new PriorityQueue<>(new CityWeightComparator());
-        //create starting city-weight pair and add to PQ
-        int[] startingCityWeight = new int[] {cityIndexMap.get(startingCity), 0};
-        ArrayList<int[]> startingCityPath = new ArrayList<>();
-        startingCityPath.add(startingCityWeight);
-        shortestPathQueue.add(startingCityPath);
-        //Dijkstra's Alg
+
+    public List<Integer> dijkstraSearch(Graph graph, int startCityIndex, int endCityIndex) {
+        // Declare Variables:
+        int[] currentCityWeightPair;
+        
+        // Initalize Hashmaps:
+        HashMap<Integer, Integer> cityIndexToDistanceMap = new HashMap<>();
+        HashMap<Integer, Integer> cityIndexToPreviousCity = new HashMap<>();
+        
+        // Intitalize Priority Queue:
+        PriorityQueue<int[]> shortestPathQueue = new PriorityQueue<>(new CityWeightComparator());
+        int[] startCityWeight = new int[]{startCityIndex, 0};
+        cityIndexToDistanceMap.put(startCityIndex, 0);
+        cityIndexToPreviousCity.put(startCityIndex, null);
+        shortestPathQueue.add(startCityWeight);
+
+        // While Loop
         while(!shortestPathQueue.isEmpty()) {
-            ArrayList<int[]> currentCityPath = shortestPathQueue.remove();
-            ArrayList<int[]> outBoundPaths = graph.getTracksOutOfCityIndex(currentCityPath.getLast()[0]);
-            for(int[] path : outBoundPaths) {
-                ArrayList<int[]> nextCityPath = (ArrayList<int[]>) currentCityPath.clone();
-                nextCityPath.add(path);
-                shortestPathQueue.add(nextCityPath);
-                if(path[0] == cityIndexMap.get(endingCity)) {
-                    return nextCityPath;
+
+            currentCityWeightPair = shortestPathQueue.remove();
+
+            List<int[]> currentCityWeightPairNeighbors = graph.getTracksOutOfCityIndex(currentCityWeightPair[0]);
+
+            for(int[] neighborCityWeightPair : currentCityWeightPairNeighbors) {
+                if(!cityIndexToPreviousCity.containsKey(neighborCityWeightPair[0])) {
+                    cityIndexToDistanceMap.put(neighborCityWeightPair[0], cityIndexToDistanceMap.get(currentCityWeightPair[0])+neighborCityWeightPair[1]);
+                    cityIndexToPreviousCity.put(neighborCityWeightPair[0], currentCityWeightPair[0]);
+                    int[] updatedNeighborCityWeightPair = new int[]{neighborCityWeightPair[0], cityIndexToDistanceMap.get(neighborCityWeightPair[0])};
+                    shortestPathQueue.add(updatedNeighborCityWeightPair);
+                } else if(cityIndexToDistanceMap.get(neighborCityWeightPair[0]) > cityIndexToDistanceMap.get(currentCityWeightPair[0])+neighborCityWeightPair[1]) {
+                    cityIndexToDistanceMap.put(neighborCityWeightPair[0], cityIndexToDistanceMap.get(currentCityWeightPair[0])+neighborCityWeightPair[1]);
+                    cityIndexToPreviousCity.put(neighborCityWeightPair[0], currentCityWeightPair[0]);
                 }
             }
         }
-        return null;
+
+        Deque<Integer> finalCityStack = new ArrayDeque<>();
+        Integer currentCityIndex = endCityIndex;
+        while(currentCityIndex != null) {
+            finalCityStack.push(currentCityIndex);
+            currentCityIndex = cityIndexToPreviousCity.get(currentCityIndex);
+        }
+
+        List<Integer> finalPath = new ArrayList<>();
+        while(!finalCityStack.isEmpty()) {
+            finalPath.add(finalCityStack.pop());
+        }
+
+        return finalPath;
+
     }
 
     public RouteCard drawRouteCard(Player player) {
