@@ -5,6 +5,7 @@ import java.util.PriorityQueue;
 import java.util.Deque;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class Board {
 
@@ -13,6 +14,10 @@ public class Board {
     private Graph graph;
     private int numVertices;
     private TrainCard[] shop = new TrainCard[5]; // Add edge cases to reshuffle the shop
+    private Deque<Card> trainCardDeck;
+    private List<Card> trainCardDiscard;
+    private Deque<Card> routeCardDeck;
+    private List<Card> routeCardDiscard;
 
     public Board() {
         this.graph = new Graph();
@@ -21,6 +26,87 @@ public class Board {
         indexCityMap = new HashMap<>(numVertices);
         addCityIndices();
         addTracks();
+        setup();
+    }
+
+    private void setup() {
+        // Initialize the Decks and Shop
+        initializeTrainCardDeck();
+        initializeRouteCardDeck();
+        initializeShop();
+    }
+
+    private void initializeTrainCardDeck() {
+        for(int i = 0; i < 12; i++) {
+            trainCardDiscard.add(new TrainCard(TrainColor.RED));
+        }
+        for(int i = 0; i < 12; i++) {
+            trainCardDiscard.add(new TrainCard(TrainColor.ORANGE));
+        }
+        for(int i = 0; i < 12; i++) {
+            trainCardDiscard.add(new TrainCard(TrainColor.YELLOW));
+        }
+        for(int i = 0; i < 12; i++) {
+            trainCardDiscard.add(new TrainCard(TrainColor.GREEN));
+        }
+        for(int i = 0; i < 12; i++) {
+            trainCardDiscard.add(new TrainCard(TrainColor.BLUE));
+        }
+        for(int i = 0; i < 12; i++) {
+            trainCardDiscard.add(new TrainCard(TrainColor.PINK));
+        }
+        for(int i = 0; i < 12; i++) {
+            trainCardDiscard.add(new TrainCard(TrainColor.WHITE));
+        }
+        for(int i = 0; i < 12; i++) {
+            trainCardDiscard.add(new TrainCard(TrainColor.BLACK));
+        }
+        for(int i = 0; i < 14; i++) {
+            trainCardDiscard.add(new TrainCard(TrainColor.WILD));
+        }
+
+        trainCardDeck = shuffle(trainCardDiscard);
+    }
+
+    private void initializeRouteCardDeck() {
+        routeCardDiscard.add(new RouteCard(City.BOSTON, City.MIAMI, 12));
+        routeCardDiscard.add(new RouteCard(City.CALGARY, City.PHOENIX, 13));
+        routeCardDiscard.add(new RouteCard(City.CALGARY, City.SLC, 7));
+        routeCardDiscard.add(new RouteCard(City.CHICAGO, City.NO, 7));
+        routeCardDiscard.add(new RouteCard(City.CHICAGO, City.SANTAFE, 9));
+        routeCardDiscard.add(new RouteCard(City.DALLAS, City.NYC, 11));
+        routeCardDiscard.add(new RouteCard(City.DENVER, City.EP, 4));
+        routeCardDiscard.add(new RouteCard(City.DENVER, City.PITTSBURGH, 11));
+        routeCardDiscard.add(new RouteCard(City.DULUTH, City.EP, 10));
+        routeCardDiscard.add(new RouteCard(City.DULUTH, City.HOUSTON, 8));
+        routeCardDiscard.add(new RouteCard(City.HELENA, City.LA, 8));
+        routeCardDiscard.add(new RouteCard(City.KC, City.HOUSTON, 5));
+        routeCardDiscard.add(new RouteCard(City.LA, City.CHICAGO, 16));
+        routeCardDiscard.add(new RouteCard(City.LA, City.MIAMI, 20));
+        routeCardDiscard.add(new RouteCard(City.LA, City.NYC, 21));
+        routeCardDiscard.add(new RouteCard(City.MONTREAL, City.ATLANTA, 9));
+        routeCardDiscard.add(new RouteCard(City.MONTREAL, City.NO, 13));
+        routeCardDiscard.add(new RouteCard(City.NYC, City.ATLANTA, 6));
+        routeCardDiscard.add(new RouteCard(City.PORTLAND, City.NASHVILLE, 17));
+        routeCardDiscard.add(new RouteCard(City.PORTLAND, City.PHOENIX, 11));
+        routeCardDiscard.add(new RouteCard(City.SANFRAN, City.ATLANTA, 17));
+        routeCardDiscard.add(new RouteCard(City.SSM, City.NASHVILLE, 8));
+        routeCardDiscard.add(new RouteCard(City.SSM, City.OKC, 9));
+        routeCardDiscard.add(new RouteCard(City.SEATTLE, City.LA, 9));
+        routeCardDiscard.add(new RouteCard(City.SEATTLE, City.NYC, 22));
+        routeCardDiscard.add(new RouteCard(City.TORONTO, City.MIAMI, 10));
+        routeCardDiscard.add(new RouteCard(City.VANCOUVER, City.MONTREAL, 20));
+        routeCardDiscard.add(new RouteCard(City.VANCOUVER, City.SANTAFE, 13));
+        routeCardDiscard.add(new RouteCard(City.WINNIPEG, City.HOUSTON, 12));
+        routeCardDiscard.add(new RouteCard(City.WINNIPEG, City.LR, 11));
+
+        routeCardDeck = shuffle(routeCardDiscard);
+    }
+
+    private void initializeShop() {
+        for(int i = 0; i < shop.length; i++) {
+            shop[i] = (TrainCard) trainCardDeck.pop();
+        }
     }
 
     public int getIndexFromCity(City city) {
@@ -208,6 +294,51 @@ public class Board {
         graph.addTrack(cityIndexMap.get(City.BOSTON), cityIndexMap.get(City.NYC), 2, TrainColor.RED);
     }
 
+    private void checkShop() {
+        int colorCount = 0;
+        int wildCount = 0;
+        TrainColor firstColor = shop[0].color;
+        for(TrainCard card : shop) {
+            if(card.color == TrainColor.WILD) {
+                wildCount++;
+            } else if(card.color == firstColor) {
+                colorCount++;
+            }
+        }
+        if(colorCount == 5 || wildCount >=3) {
+            replaceShop();
+        }
+    }
+
+    private void replaceShop() {
+        for(int i = 0; i < shop.length; i++) {
+            trainCardDiscard.add(shop[i]);
+            shop[i] = (TrainCard) trainCardDeck.pop();
+        }
+    }
+
+    public TrainCard drawTrainCardFromShop(Player player, TrainColor color) {
+        return replaceCardInShop(color);
+    }
+
+    public int findColorInShop(TrainColor color) {
+        for(int i = 0; i < shop.length; i++) {
+            if(shop[i].color == color) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    private TrainCard replaceCardInShop(TrainColor color) {
+        int indexOfCardBeingDrawn = findColorInShop(color);
+        if(indexOfCardBeingDrawn < 0) {
+            return null;
+        }
+        TrainCard card = shop[indexOfCardBeingDrawn];
+        shop[indexOfCardBeingDrawn] = (TrainCard) trainCardDeck.pop();
+        return card;
+    }
 
     public List<Integer> dijkstraSearch(City startCity, City endCity) {
         // Declare Variables:
@@ -272,24 +403,23 @@ public class Board {
 
     }
 
-    public void spendTrainCard(Player player, TrainCard card) {
-
+    public void spendTrainCards(TrainCard card, int quantity) {
+        for(int i = 0; i < quantity; i++) {
+            trainCardDiscard.add(card);
+        }
     }
 
-    public TrainCard drawTopTrainCard(Player player) {
-        return null;
+    public TrainCard drawTopTrainCard() {
+        return (TrainCard) trainCardDeck.pop();
     }
 
-    public TrainCard drawTrainCard(Player player) {
-        return null;
-    }
-
-    public void replaceTrainRow() {
-
-    }
-
-    public Deque<Card> shuffle(Deque<Card> deck) {
-        return null;
+    public Deque<Card> shuffle(List<Card> deck) {
+        Collections.shuffle(deck);
+        Deque<Card> shuffledDeck = new ArrayDeque<>();
+        for(Card card : deck) {
+            shuffledDeck.add(card);
+        }
+        return shuffledDeck;
     }
 
     public void removeTrack(int i, int j) {

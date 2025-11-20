@@ -1,24 +1,12 @@
 public class RouteCard extends Card{
 
-    private String startCity;
-    private String endCity;
-    private int pointValue;
+    public City startCity;
+    public City endCity;
+    public int pointValue;
 
-    public RouteCard(String startCity, String endCity) {
+    public RouteCard(City startCity, City endCity, int pointValue) {
         this.startCity = startCity;
         this.endCity = endCity;
+        this.pointValue = pointValue;
     }
-
-    public String getStartCity() {
-        return startCity;
-    }
-
-    public String getEndCity() {
-        return endCity;
-    }
-
-    public int getPointValue() {
-        return pointValue;
-    }
-    
 }
