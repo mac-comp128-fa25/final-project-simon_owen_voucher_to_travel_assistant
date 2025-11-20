@@ -32,14 +32,21 @@ public class Graph {
         }
     }
 
+    public void removeTrack(int i, int j) {
+        if(!graph[i][j].isEmpty()) {
+            graph[i][j].removeFirst();
+            graph[j][i].removeFirst();
+        }
+    }
+
     public int getNumVertices() {
         return numVertices;
     }
 
-    public List<int[]> getTracksOutOfCityIndex(int index) {
+    public List<int[]> getPathsOutOfCityIndex(int index) {
         List<int[]> cityWeight = new ArrayList<>();
         for(int i = 0; i < City.values().length; i++) {
-            if(graph[index][i].size() != 0) {
+            if(!graph[index][i].isEmpty()) {
                 int[] cityWeightPair = new int[]{i,graph[index][i].getFirst().getLength()};
                 cityWeight.add(cityWeightPair);
             }

@@ -231,7 +231,7 @@ public class Board {
 
             currentCityWeightPair = shortestPathQueue.remove();
 
-            List<int[]> currentCityWeightPairNeighbors = graph.getTracksOutOfCityIndex(currentCityWeightPair[0]);
+            List<int[]> currentCityWeightPairNeighbors = graph.getPathsOutOfCityIndex(currentCityWeightPair[0]);
 
             for(int[] neighborCityWeightPair : currentCityWeightPairNeighbors) {
                 if(!cityIndexToPreviousCity.containsKey(neighborCityWeightPair[0])) {
@@ -245,6 +245,8 @@ public class Board {
                 }
             }
         }
+        
+        //TODO: Catch error if city is unreacheable, a.k.a it appears alone in the stack
 
         Deque<Integer> finalCityStack = new ArrayDeque<>();
         Integer currentCityIndex = endCityIndex;
@@ -288,6 +290,14 @@ public class Board {
 
     public Deque<Card> shuffle(Deque<Card> deck) {
         return null;
+    }
+
+    public void removeTrack(int i, int j) {
+        graph.removeTrack(i, j);
+    }
+
+    public void removeTrack(int i, int j, Track track) {
+        graph.removeTrack(i, j, track);
     }
 
     
