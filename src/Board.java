@@ -314,11 +314,34 @@ public class Board {
         for(int i = 0; i < shop.length; i++) {
             trainCardDiscard.add(shop[i]);
             shop[i] = (TrainCard) trainCardDeck.pop();
+            if(trainCardDeck.isEmpty()) {
+                trainCardDeck = shuffle(trainCardDiscard);
+                trainCardDiscard = new ArrayList<>();
+            }
         }
     }
 
-    public TrainColor drawTrainCardFromShop(Player player, TrainColor color) {
-        return replaceCardInShop(color);
+    public boolean drawTrainCardFromShop(Player player, TrainColor color) {
+        TrainCard card = replaceCardInShop(color);
+        if(card != null) {
+            player.drawTrainCard(card);
+            return true;
+        }
+        return false;
+    }
+
+    private TrainCard replaceCardInShop(TrainColor color) {
+        int indexOfCardBeingDrawn = findColorInShop(color);
+        if(indexOfCardBeingDrawn < 0) {
+            return null;
+        }
+        TrainCard card = shop[indexOfCardBeingDrawn];
+        shop[indexOfCardBeingDrawn] = (TrainCard) trainCardDeck.pop();
+        if(trainCardDeck.isEmpty()) {
+            trainCardDeck = shuffle(trainCardDiscard);
+            trainCardDiscard = new ArrayList<>();
+        }
+        return card;
     }
 
     public int findColorInShop(TrainColor color) {
@@ -330,19 +353,15 @@ public class Board {
         return -1;
     }
 
-    public List<Track> getTracks(City city1, City city2) {
-        return graph.getTracks(cityIndexMap.get(city1), cityIndexMap.get(city2));
+    public void drawTopTrainCard(Player player) {
+        TrainCard card = (TrainCard) trainCardDeck.pop();
+        player.drawTrainCard(card);
+        if(trainCardDeck.isEmpty()) {
+            trainCardDeck = shuffle(trainCardDiscard);
+            trainCardDiscard = new ArrayList<>();
+        }
     }
 
-    private TrainColor replaceCardInShop(TrainColor color) {
-        int indexOfCardBeingDrawn = findColorInShop(color);
-        if(indexOfCardBeingDrawn < 0) {
-            return null;
-        }
-        TrainCard card = shop[indexOfCardBeingDrawn];
-        shop[indexOfCardBeingDrawn] = (TrainCard) trainCardDeck.pop();
-        return card.color;
-    }
 
     public List<Integer> dijkstraSearch(City startCity, City endCity) {
         // Declare Variables:
@@ -399,22 +418,25 @@ public class Board {
 
     }
 
-    public RouteCard drawRouteCard(Player player) {
-        return null;
+    public void drawRouteCard(Player player) {
+        player.drawRouteCard((RouteCard) routeCardDeck.pop());
+        if(routeCardDeck.isEmpty()) {
+            routeCardDeck = shuffle(routeCardDiscard);
+            routeCardDiscard = new ArrayList<>();
+        }
+        
     }
 
     public void discardRouteCard(Player player, RouteCard card) {
 
     }
 
-    public void spendTrainCards(TrainColor color, int quantity) {
-        for(int i = 0; i < quantity; i++) {
-            trainCardDiscard.add(new TrainCard(color));
+    public void playTrainCards(Player player, TrainColor color, int quantity) {
+        if(player.buyTrack(color, quantity)){
+            for(int i = 0; i < quantity; i++) {
+                trainCardDiscard.add(new TrainCard(color));
+            }
         }
-    }
-
-    public TrainCard drawTopTrainCard() {
-        return (TrainCard) trainCardDeck.pop();
     }
 
     public Deque<Card> shuffle(List<Card> deck) {
