@@ -9,4 +9,9 @@ public class RouteCard extends Card{
         this.endCity = endCity;
         this.pointValue = pointValue;
     }
+
+    @Override
+    public String toString() {
+        return (startCity.toString() + " -> " + endCity.toString() + " for " + pointValue + " points!");
+    }
 }

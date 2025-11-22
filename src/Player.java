@@ -11,7 +11,7 @@ public class Player {
     private int trains = 45;
     private int moves = 2;
 
-    public Player(Board board) {
+    public Player() {
         hand = new HashMap<>();
     }
 

@@ -33,10 +33,10 @@ public class Board {
         // Initialize the Decks and Shop
         initializeTrainCardDeck();
         initializeRouteCardDeck();
-        initializeShop();
     }
 
     private void initializeTrainCardDeck() {
+        trainCardDiscard = new ArrayList<>();
         for(int i = 0; i < 12; i++) {
             trainCardDiscard.add(new TrainCard(TrainColor.RED));
         }
@@ -69,6 +69,7 @@ public class Board {
     }
 
     private void initializeRouteCardDeck() {
+        routeCardDiscard = new ArrayList<>();
         routeCardDiscard.add(new RouteCard(City.BOSTON, City.MIAMI, 12));
         routeCardDiscard.add(new RouteCard(City.CALGARY, City.PHOENIX, 13));
         routeCardDiscard.add(new RouteCard(City.CALGARY, City.SLC, 7));
@@ -103,7 +104,7 @@ public class Board {
         routeCardDeck = shuffle(routeCardDiscard);
     }
 
-    private void initializeShop() {
+    public void initializeShop() {
         for(int i = 0; i < shop.length; i++) {
             shop[i] = (TrainCard) trainCardDeck.pop();
         }
@@ -437,6 +438,18 @@ public class Board {
                 trainCardDiscard.add(new TrainCard(color));
             }
         }
+    }
+
+    public RouteCard[] viewThreeRoutes() {
+        RouteCard[] threeRoutes = new RouteCard[3];
+        for(int i = 0; i < 3; i++) {
+            threeRoutes[i] = (RouteCard) routeCardDeck.pop();
+            if(routeCardDeck.isEmpty()) {
+                routeCardDeck = shuffle(routeCardDiscard);
+                routeCardDiscard = new ArrayList<>();
+            }
+        }
+        return threeRoutes;
     }
 
     public Deque<Card> shuffle(List<Card> deck) {
