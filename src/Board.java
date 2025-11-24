@@ -432,11 +432,26 @@ public class Board {
 
     }
 
-    public void playTrainCards(Player player, TrainColor color, int quantity) {
+    public boolean buildTrain(Player player, City startCity, City endCity, TrainColor color) {
+        List<Track> validTracks = graph.getTracks(cityIndexMap.get(startCity), cityIndexMap.get(endCity));
+        for(Track track : validTracks) {
+            if(track.color == color) {
+                if(playTrainCards(player, color, track.length)){
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public boolean playTrainCards(Player player, TrainColor color, int quantity) {
         if(player.buyTrack(color, quantity)){
             for(int i = 0; i < quantity; i++) {
                 trainCardDiscard.add(new TrainCard(color));
             }
+            return true;
+        } else {
+            return false;
         }
     }
 

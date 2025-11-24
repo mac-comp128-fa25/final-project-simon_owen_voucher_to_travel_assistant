@@ -1,7 +1,7 @@
 import java.util.Map;
 import java.util.Set;
 import java.util.HashMap;
-import java.util.Scanner;
+import java.util.HashSet;
 import java.util.List;
 public class Player {
 
@@ -13,6 +13,19 @@ public class Player {
 
     public Player() {
         hand = new HashMap<>();
+        routes = new HashSet<>();
+    }
+
+    public boolean hasActions() {
+        return moves > 0;
+    }
+
+    public void endTurn() {
+        moves = 2;
+    }
+
+    public void makeMoves(int actionsSpent) {
+        moves -= actionsSpent;
     }
 
     public int getScore() {
@@ -47,6 +60,7 @@ public class Player {
         } 
         return false;
         // Maybe throw exception? Add to discard pile <- use board somehow?
+        // Indicate that player owns the track somehow? 
     }
 
     private boolean spendTrains(int quantity) {
