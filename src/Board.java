@@ -311,6 +311,10 @@ public class Board {
         }
     }
 
+    public TrainCard[] viewShop() {
+        return shop;
+    }
+
     private void replaceShop() {
         for(int i = 0; i < shop.length; i++) {
             trainCardDiscard.add(shop[i]);
@@ -322,8 +326,10 @@ public class Board {
         }
     }
 
-    public boolean drawTrainCardFromShop(Player player, TrainColor color) {
-        TrainCard card = replaceCardInShop(color);
+    public boolean drawTrainCardFromShop(Player player, int cardIndexInShop) {
+        TrainCard card = shop[cardIndexInShop];
+        replaceCardInShop(cardIndexInShop);
+        checkShop();
         if(card != null) {
             player.drawTrainCard(card);
             return true;
@@ -331,18 +337,12 @@ public class Board {
         return false;
     }
 
-    private TrainCard replaceCardInShop(TrainColor color) {
-        int indexOfCardBeingDrawn = findColorInShop(color);
-        if(indexOfCardBeingDrawn < 0) {
-            return null;
-        }
-        TrainCard card = shop[indexOfCardBeingDrawn];
-        shop[indexOfCardBeingDrawn] = (TrainCard) trainCardDeck.pop();
+    private void replaceCardInShop(int cardIndexInShop) {
+        shop[cardIndexInShop-1] = (TrainCard) trainCardDeck.pop();
         if(trainCardDeck.isEmpty()) {
             trainCardDeck = shuffle(trainCardDiscard);
             trainCardDiscard = new ArrayList<>();
         }
-        return card;
     }
 
     public int findColorInShop(TrainColor color) {
@@ -437,6 +437,7 @@ public class Board {
         for(Track track : validTracks) {
             if(track.color == color) {
                 if(playTrainCards(player, color, track.length)){
+                    player.buyTrack(startCity, endCity, track.length, color);
                     return true;
                 }
             }
@@ -445,7 +446,7 @@ public class Board {
     }
 
     public boolean playTrainCards(Player player, TrainColor color, int quantity) {
-        if(player.buyTrack(color, quantity)){
+        if(player.spendTrainCards(color, quantity)){
             for(int i = 0; i < quantity; i++) {
                 trainCardDiscard.add(new TrainCard(color));
             }
