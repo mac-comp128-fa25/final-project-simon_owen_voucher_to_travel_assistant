@@ -14,12 +14,25 @@ public class Player {
     private Map<Integer,Integer> scoringGuide;
     private int trains = 45;
     private int moves = 2;
+    private String name;
 
-    public Player() {
-        hand = new HashMap<>();
+    public Player(String name) {
+        this.name = name;
+        initializeHand();
         routes = new HashSet<>();
         ownedTracks = new ArrayList<>();
         makeScoringGuide();
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    private void initializeHand() {
+        hand = new HashMap<>();
+        for(TrainColor color : TrainColor.values()) {
+            hand.put(color, 0);
+        }
     }
 
     public Set<RouteCard> getRoutes() {
@@ -27,7 +40,7 @@ public class Player {
     }
 
     private void makeScoringGuide() {
-        Map<Integer,Integer> scoringGuide = new HashMap<>();
+        scoringGuide = new HashMap<>();
         scoringGuide.put(1,1);
         scoringGuide.put(2,2);
         scoringGuide.put(3,4);
@@ -89,13 +102,19 @@ public class Player {
     }
 
     public boolean spendTrainCards(TrainColor color, int quantity) {
-        if(hand.get(color) != null && hand.get(color) >= quantity && spendTrains(quantity)) {
+        if(hand.get(color) >= quantity && spendTrains(quantity)) {
             hand.put(color, hand.get(color) - quantity);
             return true;
-        } 
+        } else if(hand.get(color) + hand.get(TrainColor.WILD) >= quantity && spendTrains(quantity)) {
+            int leftOver = quantity - hand.get(color);
+            hand.put(color, 0);
+            hand.put(TrainColor.WILD, hand.get(TrainColor.WILD) - leftOver);
+            return true;
+        } else if(hand.get(TrainColor.WILD) >= quantity) {
+            hand.put(TrainColor.WILD, hand.get(TrainColor.WILD) - quantity);
+            return true;
+        }
         return false;
-        // Maybe throw exception? Add to discard pile <- use board somehow?
-        // Indicate that player owns the track somehow? 
     }
 
     private boolean spendTrains(int quantity) {

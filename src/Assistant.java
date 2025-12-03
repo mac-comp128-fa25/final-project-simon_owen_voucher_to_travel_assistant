@@ -22,7 +22,6 @@ public class Assistant {
     
     public static void main(String[] args) {
         Board gameBoard = new Board();
-        Player player = new Player();
         printCityPath(gameBoard.dijkstraSearch(City.CALGARY, City.SANFRAN), gameBoard);
         printCityPath(gameBoard.dijkstraSearch(City.SANFRAN, City.CALGARY), gameBoard);
         printCityPath(gameBoard.dijkstraSearch(City.PHOENIX, City.MONTREAL), gameBoard);

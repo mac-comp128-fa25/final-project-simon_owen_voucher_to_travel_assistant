@@ -338,7 +338,7 @@ public class Board {
     }
 
     private void replaceCardInShop(int cardIndexInShop) {
-        shop[cardIndexInShop-1] = (TrainCard) trainCardDeck.pop();
+        shop[cardIndexInShop] = (TrainCard) trainCardDeck.pop();
         if(trainCardDeck.isEmpty()) {
             trainCardDeck = shuffle(trainCardDiscard);
             trainCardDiscard = new ArrayList<>();
@@ -435,7 +435,7 @@ public class Board {
     public boolean buildTrain(Player player, City startCity, City endCity, TrainColor color) {
         List<Track> validTracks = graph.getTracks(cityIndexMap.get(startCity), cityIndexMap.get(endCity));
         for(Track track : validTracks) {
-            if(track.color == color) {
+            if(track.color == color || track.color == TrainColor.WILD) {
                 if(playTrainCards(player, color, track.length)){
                     player.buyTrack(startCity, endCity, track.length, color);
                     return true;

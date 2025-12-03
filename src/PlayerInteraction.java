@@ -12,7 +12,7 @@ public class PlayerInteraction {
         board = new Board();
         players = new ArrayDeque<>();
         for(int i = 0; i<numberOfPlayers; i++) {
-            players.add(new Player());
+            players.add(new Player("Player: " + i));
         }
         assistant = new Assistant(players.peek(), board);
     }
@@ -31,6 +31,7 @@ public class PlayerInteraction {
         while(!gameOver) {
             Player currentPlayer = players.remove();
             displayBoardState();
+            System.out.println(currentPlayer.getName());
             takeTurn(currentPlayer, sc);
             // Check for gameover conditions
             players.add(currentPlayer);
@@ -70,10 +71,10 @@ public class PlayerInteraction {
                 player.drawRouteCard(threeRoutesForPlayer[routeCardChosen-1]);
                 threeRoutesForPlayer[routeCardChosen-1] = null;
                 routeCardsChosen++;
-                if(routeCardsChosen == requiredCards) {
+                if(routeCardsChosen >= requiredCards) {
                     System.out.print("Would you like to continue? (Y/N) ");
                     String response = sc.next();
-                    if(!response.equals("Y")) {
+                    if(!response.toUpperCase().equals("Y")) {
                         atLeastTwoRouteCards = true;
                     }
                 } else if(routeCardsChosen == 3) {
@@ -98,8 +99,7 @@ public class PlayerInteraction {
                 System.out.print("Would you like to take from the shop or from the deck? (1:Shop, 2:Deck) ");
                 int cardActionChosen = sc.nextInt();
                 if(cardActionChosen == 1) {
-                    // TODO: Draw card from shop(should be finished)
-                    System.out.println("Which card would you like to take? (1-5) ");
+                   System.out.println("Which card would you like to take? (1-5) ");
                     displayShop(shop);
                     int shopCardChosen = sc.nextInt();
                     if(shopCardChosen < 6 && shopCardChosen > 0) {
@@ -107,11 +107,11 @@ public class PlayerInteraction {
                             System.out.println("You may not take a wild if you have already taken a card");
                             continue;
                         } else if(shop[shopCardChosen-1].color == TrainColor.WILD) {
-                            board.drawTrainCardFromShop(player, shopCardChosen);
+                            board.drawTrainCardFromShop(player, shopCardChosen-1);
                             player.makeMoves(2);
                         } else {
-                            board.drawTrainCardFromShop(player, shopCardChosen);
-                            player.makeMoves(1); // if not wild
+                            board.drawTrainCardFromShop(player, shopCardChosen-1);
+                            player.makeMoves(1);
                         }
                     } else {
                         System.out.println("NAH");
@@ -120,27 +120,34 @@ public class PlayerInteraction {
                     board.drawTopTrainCard(player);
                     player.makeMoves(1);
                 }
-            } else if(moveChosen == 2 ) {
-                takeRouteCards(player, sc, 1);
-                /* TODO: Draw three, player can choose 1-3 of them to put in hand. Split up code from setup() to reuse main ideas 
-                *  I.e. write a method that has a player draw three route cards and be forced to choose n of them. This is basically the same
-                *  as what we have just the number of cards that the player needs to take changes. (should be finished)
-                */ 
-                player.makeMoves(2);
-            } else if(moveChosen == 3) {
-                System.out.print("In which city will your train track start? (City Name) ");
-                City startCity = City.valueOf(sc.next()); // IDK if this works, suhas said we should use a hashmap.
-                System.out.print("In which city will your train track end? (City Name) ");
-                City endCity = City.valueOf(sc.next());
-                System.out.print("What color? ");
-                TrainColor color = TrainColor.valueOf(sc.next());
-                //TODO: Check if this is a valid move, buildtrain should return false if this is the case (should be done)
-                if(!board.buildTrain(player, startCity, endCity, color)) {
-                    System.out.println("You cannot buy this track, it is unavailable in the chosen color");
+            } else if(moveChosen == 2) {
+                if(player.getMovesLeft() >= 2) {
+                    takeRouteCards(player, sc, 1);
+                    player.makeMoves(2);
                 } else {
-                    System.out.println("You now own this track");
+                    System.out.println("You don't have enough actions for this, try again next turn");
                 }
-                player.makeMoves(2);
+            } else if(moveChosen == 3 && player.getMovesLeft() >= 2) {
+                if(player.getMovesLeft() >= 2) {
+
+                    System.out.print("In which city will your train track start? (City Name) ");
+                    City startCity = City.valueOf(sc.next().toUpperCase());
+
+                    System.out.print("In which city will your train track end? (City Name) ");
+                    City endCity = City.valueOf(sc.next().toUpperCase());
+
+                    System.out.print("What color? ");
+                    TrainColor color = TrainColor.valueOf(sc.next().toUpperCase());
+
+                    if(!board.buildTrain(player, startCity, endCity, color)) {
+                        System.out.println("You cannot buy this track, try again");
+                    } else {
+                        System.out.println("You now own this track");
+                        player.makeMoves(2);
+                    }
+                } else {
+                    System.out.println("You don't have enough actions for this, try again next turn");
+                }
             } else if(moveChosen == 4) {
                 displayShop(shop);
             } else if(moveChosen == 5) {
@@ -149,6 +156,7 @@ public class PlayerInteraction {
                 viewRoutes(player);
             }
         }
+        player.endTurn();
     }
 
     private void displayBoardState() {
@@ -199,6 +207,5 @@ public class PlayerInteraction {
     public static void main(String[] args) {
         PlayerInteraction io = new PlayerInteraction(2);
         io.playGame();
-        //TODO: running into a weird bug where the player's hand changes every time they update it?
     }
 }
