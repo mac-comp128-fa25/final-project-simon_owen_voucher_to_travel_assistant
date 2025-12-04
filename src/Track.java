@@ -1,4 +1,4 @@
-public class Track {
+public class Track{
 
     public int length;
     public TrainColor color;
