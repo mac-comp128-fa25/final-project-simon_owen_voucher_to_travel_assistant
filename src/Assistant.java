@@ -4,19 +4,23 @@ import java.util.PriorityQueue;
 
 public class Assistant {
 
-    private Player player;
     private Board board;
     private PriorityQueue<RoutePath> tracksNeeded;
     private boolean desperate = false;
 
-    public Assistant(Player player, Board board) {
-        this.player = player;
+    public Assistant(Board board) {
         this.board = board;
         tracksNeeded = new PriorityQueue<>();
 
     }
 
-    public void addRouteToPQ(RouteCard card) {
+    private void addRoutes() {
+        for(RouteCard card : player.getRoutes()) {
+            addRouteToPQ(card);
+        }
+    }
+
+    private void addRouteToPQ(RouteCard card) {
         List<Track> tracks = findBestPath(card.startCity, card.endCity);
         tracksNeeded.add(new RoutePath(tracks, card.pointValue));
     }
@@ -104,8 +108,20 @@ public class Assistant {
 
     private List<Track> findBestPath(City firstCity, City lastCity) {
         List<Integer> cities = board.dijkstraSearch(firstCity, lastCity);
-        board.
-
+        List<Track> tracks = new ArrayList<>();
+        Integer startCity = null;
+        Integer endCity = null;
+        for(Integer city : cities) {
+            endCity = city;
+            if(startCity == null) {
+                startCity = endCity;
+                continue;
+            } else {
+                tracks.add(board.getTrackFromCities(startCity, endCity));
+                startCity = endCity;
+            }
+        }
+        return tracks;
     }
 
     private static void printCityPath(List<Integer> path, Board gameBoard) {

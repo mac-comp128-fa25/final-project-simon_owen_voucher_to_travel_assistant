@@ -15,8 +15,10 @@ public class Player {
     private int trains = 45;
     private int moves = 2;
     private String name;
+    private Assistant assistant;
 
-    public Player(String name) {
+    public Player(String name, Assistant assistant) {
+        this.assistant = assistant;
         this.name = name;
         initializeHand();
         routes = new HashSet<>();

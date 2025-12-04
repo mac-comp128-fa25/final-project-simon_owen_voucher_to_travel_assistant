@@ -12,7 +12,7 @@ public class PlayerInteraction {
         board = new Board();
         players = new ArrayDeque<>();
         for(int i = 0; i<numberOfPlayers; i++) {
-            players.add(new Player("Player: " + i));
+            players.add(new Player("Player: " + i), new Assistant());
         }
         assistant = new Assistant(players.peek(), board);
     }
