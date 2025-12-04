@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.List;
 import java.util.PriorityQueue;
 
@@ -11,6 +12,13 @@ public class Assistant {
     public Assistant(Player player, Board board) {
         this.player = player;
         this.board = board;
+        tracksNeeded = new PriorityQueue<>();
+
+    }
+
+    public void addRouteToPQ(RouteCard card) {
+        List<Track> tracks = findBestPath(card.startCity, card.endCity);
+        tracksNeeded.add(new RoutePath(tracks, card.pointValue));
     }
 
     public String getRecommendedMove() {
@@ -58,20 +66,46 @@ public class Assistant {
     private String decideWhichTrackToBuy() {
         //if player can purchase priority track, buy that one
         //else, check priority queue for any tracks the player can buy and buy them
-        return "ALL OF THEM";
+        for(RoutePath route : tracksNeeded) {
+            for(Track track : route.getTracks()) {
+                TrainColor trackColor = track.color;
+                int trackLength = track.length;
+                if(player.getHand().get(trackColor) >= trackLength) {
+                    return "Assistant reccomends you buy " + track.startCity + " to " + track.endCity;
+                }
+            }
+        }
+        return "Assistant Doesn't Know What To Do";
     }
 
     private String decideWhichCardToTake() {
-        TrainColor priorityColor = tracksNeeded.poll().poll().color;
+        //if desperate, check shop for wilds and take if able
         //if shop has priority color, take that color from the shop
         //else, check the shop for any other lower priority colors and take if available
-        //else, if desperate, check shop for wilds and take if able
         //else, draw from the top of the deck
-        return "ALL OF THEM";
+        if(desperate && player.getMovesLeft() >= 2) {
+            for(TrainCard card : board.viewShop()) {
+                if(card.color == TrainColor.WILD) {
+                    return "Assistant recommends you take a wild from the shop";
+                }
+            }
+        }
+        for(RoutePath route : tracksNeeded) {
+            for(Track track : route.getTracks()) {
+                for(TrainCard card : board.viewShop()) {
+                    if(track.color == card.color) {
+                        return "Assistant recommends you take " + card.color + " from the shop";
+                    }
+                }
+            }
+        }
+        return "Assistant recommends you draw 2 from the top of the deck";
     }
 
-    private List<Integer> findBestPath(City firstCity, City lastCity) {
-        return board.dijkstraSearch(firstCity, lastCity);
+    private List<Track> findBestPath(City firstCity, City lastCity) {
+        List<Integer> cities = board.dijkstraSearch(firstCity, lastCity);
+        board.
+
     }
 
     private static void printCityPath(List<Integer> path, Board gameBoard) {

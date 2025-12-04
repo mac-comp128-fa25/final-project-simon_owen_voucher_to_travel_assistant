@@ -118,6 +118,14 @@ public class Board {
         return indexCityMap.get(index);
     }
 
+    public Track getTrackFromCities(Integer city1, Integer city2, TrainColor color) {
+        for(Track track : graph.graph[city1][city2]) {
+            if(track.color == color) {
+                return track;
+            }
+        }
+    }
+
     private void addCityIndices() {
         cityIndexMap.put(City.ATLANTA, 0);
         cityIndexMap.put(City.BOSTON, 1);
