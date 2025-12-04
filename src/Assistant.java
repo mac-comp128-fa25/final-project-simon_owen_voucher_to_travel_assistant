@@ -10,7 +10,13 @@ public class Assistant {
         this.board = board;
     }
 
-    
+    public String getRecommendedMove() {
+        return "WIN";
+    }
+
+    private List<Integer> findBestPath(City firstCity, City lastCity) {
+        return board.dijkstraSearch(firstCity, lastCity);
+    }
 
     private static void printCityPath(List<Integer> path, Board gameBoard) {
         for(Integer index : path) {
