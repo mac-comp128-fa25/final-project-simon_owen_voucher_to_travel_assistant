@@ -165,6 +165,12 @@ public class PlayerInteraction {
                     } else {
                         System.out.println("You now own this track");
                         player.makeMoves(2);
+                        for(Player otherPlayer : players) {
+                            if(otherPlayer instanceof Opponent) {
+                                Opponent otherOpponent = (Opponent) otherPlayer;
+                                otherOpponent.recheckRoutes(player.getLastTrackBought());
+                            }
+                        }
                     }
                 } else {
                     System.out.println("You don't have enough actions for this, try again next turn");

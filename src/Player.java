@@ -96,6 +96,10 @@ public class Player {
     public void buyTrack(City startCity, City endCity, int length, TrainColor color) {
         ownedTracks.add(new Track(startCity, endCity, length, color));
     }
+    
+    public Track getLastTrackBought() {
+        return ownedTracks.getLast();
+    }
 
     public void drawTrainCard(TrainCard card) {
         if(hand.containsKey(card.color)) {

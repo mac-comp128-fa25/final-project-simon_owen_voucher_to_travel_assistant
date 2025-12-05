@@ -329,8 +329,6 @@ public class Board {
                 }
             }
         }
-        
-        //TODO: Catch error if city is unreacheable, a.k.a it appears alone in the stack
 
         Deque<Integer> finalCityStack = new ArrayDeque<>();
         Integer currentCityIndex = endCityIndex;
