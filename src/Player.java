@@ -24,19 +24,11 @@ public class Player {
         makeScoringGuide();
     }
 
-    public String getName() {
-        return name;
-    }
-
     private void initializeHand() {
         hand = new HashMap<>();
         for(TrainColor color : TrainColor.values()) {
             hand.put(color, 0);
         }
-    }
-
-    public Set<RouteCard> getRoutes() {
-        return routes;
     }
 
     private void makeScoringGuide() {
@@ -53,8 +45,20 @@ public class Player {
         return ownedTracks;
     }
 
+    public Set<RouteCard> getRoutes() {
+        return routes;
+    }
+
+    public String getName() {
+        return name;
+    }
+
     public int getTrainsLeft() {
         return trains;
+    }
+
+    public int getScore() {
+        return score;
     }
 
     public boolean hasActions() {
@@ -65,6 +69,10 @@ public class Player {
         return moves;
     }
 
+    public Map<TrainColor,Integer> getHand() {
+        return hand;
+    }
+
     public void endTurn() {
         moves = 2;
     }
@@ -72,25 +80,13 @@ public class Player {
     public void makeMoves(int actionsSpent) {
         moves -= actionsSpent;
     }
-
-    public int getScore() {
-        return score;
-    }
     
     public void addToScore(int points) {
         score += points;
     }
 
-    public Map<TrainColor,Integer> getHand() {
-        return hand;
-    }
-
-    public void drawTrainCard(TrainCard card) {
-        if(hand.containsKey(card.color)) {
-            hand.put(card.color, hand.get(card.color)+1);
-        } else {
-            hand.put(card.color, 1);
-        }
+    private void gainPoints(int length) {
+        score += scoringGuide.get(length);
     }
 
     public void drawRouteCard(RouteCard card) {
@@ -99,6 +95,14 @@ public class Player {
 
     public void buyTrack(City startCity, City endCity, int length, TrainColor color) {
         ownedTracks.add(new Track(startCity, endCity, length, color));
+    }
+
+    public void drawTrainCard(TrainCard card) {
+        if(hand.containsKey(card.color)) {
+            hand.put(card.color, hand.get(card.color)+1);
+        } else {
+            hand.put(card.color, 1);
+        }
     }
 
     public boolean spendTrainCards(TrainColor color, int quantity) {
@@ -124,9 +128,5 @@ public class Player {
             return true;
         }
         return false;
-    }
-
-    private void gainPoints(int length) {
-        score += scoringGuide.get(length);
     }
 }

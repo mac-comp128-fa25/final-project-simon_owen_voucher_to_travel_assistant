@@ -20,14 +20,6 @@ public class PlayerInteraction {
         }
     }
 
-    public void checkDesperation() {
-        for(Player player : players) {
-            if(player.getTrainsLeft() <= 10) {
-                opponentsDesperate = true;
-            }
-        }
-    }
-
     public void playGame() {
         Scanner sc = new Scanner(System.in);
         boolean gameOver = false;
@@ -43,7 +35,7 @@ public class PlayerInteraction {
         }
         board.initializeShop();
 
-
+        //while loop for the actual gameplay
         while(!gameOver) {
             checkDesperation();
             Player currentPlayer = players.remove();
@@ -62,6 +54,13 @@ public class PlayerInteraction {
         }
     }
 
+    private void checkDesperation() {
+        for(Player player : players) {
+            if(player.getTrainsLeft() <= 10) {
+                opponentsDesperate = true;
+            }
+        }
+    }
 
     private void setUp(Player player, Scanner sc) {
         for(int i = 0; i < 4; i++) {
@@ -70,7 +69,7 @@ public class PlayerInteraction {
         takeRouteCards(player, sc, 2);
     }
 
-    public void takeRouteCards(Player player, Scanner sc, int requiredCards) {
+    private void takeRouteCards(Player player, Scanner sc, int requiredCards) {
         RouteCard[] threeRoutesForPlayer = board.viewThreeRoutes();
 
         boolean atLeastTwoRouteCards = false;
@@ -82,7 +81,6 @@ public class PlayerInteraction {
                 } else {
                     System.out.println((i+1) + ". ALREADY CHOSEN");
                 }
-                
             }
             System.out.print("Which Route Card Would you Like to Choose? (1,2,3) ");
             int routeCardChosen = sc.nextInt();
@@ -174,9 +172,9 @@ public class PlayerInteraction {
             } else if(moveChosen == 4) {
                 displayShop(shop);
             } else if(moveChosen == 5) {
-                viewHand(player);
+                displayHand(player);
             } else if(moveChosen == 6) {
-                viewRoutes(player);
+                displayRoutes(player);
             }
         }
         player.endTurn();
@@ -215,13 +213,15 @@ public class PlayerInteraction {
         }
     }
 
-    private void viewHand(Player player) {
+    private void displayHand(Player player) {
+        //print player's hand
         for(TrainColor key : player.getHand().keySet()) {
             System.out.println(key + " : " + player.getHand().get(key));
         }
     }
 
-    private void viewRoutes(Player player) {
+    private void displayRoutes(Player player) {
+        //print player's routes
         for(RouteCard route : player.getRoutes()) {
             System.out.println(route);
         }

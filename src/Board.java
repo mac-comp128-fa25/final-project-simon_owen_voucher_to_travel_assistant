@@ -285,6 +285,13 @@ public class Board {
         }
     }
 
+    public void removeTrack(int i, int j) {
+        graph.removeTrack(i, j);
+    }
+
+    public void removeTrack(int i, int j, Track track) {
+        graph.removeTrack(i, j, track);
+    }
 
     public List<Integer> dijkstraSearch(City startCity, City endCity) {
         // Declare Variables:
@@ -338,7 +345,6 @@ public class Board {
         }
 
         return finalPath;
-
     }
 
     public void drawRouteCard(Player player) {
@@ -347,11 +353,10 @@ public class Board {
             routeCardDeck = shuffle(routeCardDiscard);
             routeCardDiscard = new ArrayList<>();
         }
-        
     }
 
     public void discardRouteCard(Player player, RouteCard card) {
-
+        
     }
 
     public boolean buildTrain(Player player, City startCity, City endCity, TrainColor color) {
@@ -398,14 +403,4 @@ public class Board {
         }
         return shuffledDeck;
     }
-
-    public void removeTrack(int i, int j) {
-        graph.removeTrack(i, j);
-    }
-
-    public void removeTrack(int i, int j, Track track) {
-        graph.removeTrack(i, j, track);
-    }
-
-    
 }
