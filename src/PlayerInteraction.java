@@ -6,15 +6,17 @@ public class PlayerInteraction {
 
     private Board board;
     private Queue<Player> players;
-    private Assistant assistant;
+    private Opponent opponent;
 
-    public PlayerInteraction(int numberOfPlayers) {
+    public PlayerInteraction(int numberOfPlayers, int numberOfBots) {
         board = new Board();
         players = new ArrayDeque<>();
         for(int i = 0; i<numberOfPlayers; i++) {
-            players.add(new Player("Player: " + i), new Assistant());
+            players.add(new Player("Player: " + i+1));
         }
-        assistant = new Assistant(players.peek(), board);
+        for(int i = 0; i<numberOfBots; i++) {
+            opponent = new Opponent(board, "OP: " + i+1);
+        }
     }
 
     public void playGame() {
@@ -205,7 +207,7 @@ public class PlayerInteraction {
     }
 
     public static void main(String[] args) {
-        PlayerInteraction io = new PlayerInteraction(2);
+        PlayerInteraction io = new PlayerInteraction(1, 1);
         io.playGame();
     }
 }
