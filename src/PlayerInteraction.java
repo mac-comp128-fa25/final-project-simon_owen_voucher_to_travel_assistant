@@ -24,21 +24,31 @@ public class PlayerInteraction {
         boolean gameOver = false;
 
         for(Player player : players) {
-            System.out.println("--------- New Player Setup ---------");
-            setUp(player, sc);
+            if(player instanceof Opponent) {
+                opponent = (Opponent) player;
+                opponent.opponentSetUp();
+            } else {
+                System.out.println("--------- New Player Setup ---------");
+                setUp(player, sc);
+            }
         }
         board.initializeShop();
 
 
         while(!gameOver) {
             Player currentPlayer = players.remove();
-            displayBoardState();
-            System.out.println(currentPlayer.getName());
-            takeTurn(currentPlayer, sc);
-            // Check for gameover conditions
-            players.add(currentPlayer);
+            if(currentPlayer instanceof Opponent) {
+                opponent = (Opponent) currentPlayer;
+                opponent.takeOpponentTurn();
+                players.add(currentPlayer);
+            } else {
+                displayBoardState();
+                System.out.println(currentPlayer.getName());
+                takePlayerTurn(currentPlayer, sc);
+                // Check for gameover conditions
+                players.add(currentPlayer);
+            }
         }
-
     }
 
 
@@ -86,7 +96,7 @@ public class PlayerInteraction {
         }
     }
 
-    public void takeTurn(Player player, Scanner sc) {
+    public void takePlayerTurn(Player player, Scanner sc) {
         TrainCard[] shop = board.viewShop();
         while(player.hasActions()) {
             System.out.println("1. Draw a Train Card");
