@@ -1,6 +1,5 @@
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Deque;
 import java.util.ArrayDeque;
@@ -10,7 +9,6 @@ import java.util.Collections;
 public class Board {
 
     private Graph graph;
-    private int numVertices;
     private TrainCard[] shop = new TrainCard[5]; // Add edge cases to reshuffle the shop
     private Deque<Card> trainCardDeck;
     private List<Card> trainCardDiscard;
@@ -19,7 +17,6 @@ public class Board {
 
     public Board() {
         this.graph = new Graph();
-        numVertices = graph.getNumVertices();
         addTracks();
         setup();
     }

@@ -7,6 +7,7 @@ public class PlayerInteraction {
     private Board board;
     private Queue<Player> players;
     private Opponent opponent;
+    private boolean opponentsDesperate = false;
 
     public PlayerInteraction(int numberOfPlayers, int numberOfBots) {
         board = new Board();
@@ -16,6 +17,14 @@ public class PlayerInteraction {
         }
         for(int i = 0; i<numberOfBots; i++) {
             opponent = new Opponent(board, "OP: " + i+1);
+        }
+    }
+
+    public void checkDesperation() {
+        for(Player player : players) {
+            if(player.getTrainsLeft() <= 10) {
+                opponentsDesperate = true;
+            }
         }
     }
 
@@ -36,9 +45,11 @@ public class PlayerInteraction {
 
 
         while(!gameOver) {
+            checkDesperation();
             Player currentPlayer = players.remove();
             if(currentPlayer instanceof Opponent) {
                 opponent = (Opponent) currentPlayer;
+                opponent.setDesperation(opponentsDesperate);
                 opponent.takeOpponentTurn();
                 players.add(currentPlayer);
             } else {
