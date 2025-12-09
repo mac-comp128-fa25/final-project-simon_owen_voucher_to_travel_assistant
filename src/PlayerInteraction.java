@@ -73,8 +73,9 @@ public class PlayerInteraction {
         RouteCard[] threeRoutesForPlayer = board.viewThreeRoutes();
 
         boolean atLeastTwoRouteCards = false;
+        int cardsChosen = 0;
         int routeCardsChosen = 0;
-        while(!atLeastTwoRouteCards) {
+        while(!atLeastTwoRouteCards && cardsChosen < 3) {
             for(int i = 0; i < 3; i++) {
                 if(threeRoutesForPlayer[i] != null ) {
                     System.out.println((i+1) + ". " + threeRoutesForPlayer[i]);
@@ -89,6 +90,7 @@ public class PlayerInteraction {
             } else if(threeRoutesForPlayer[routeCardChosen-1] == null) {
                 System.out.println("You already choose this route goofy ahh");
             } else {
+                cardsChosen++;
                 player.drawRouteCard(threeRoutesForPlayer[routeCardChosen-1]);
                 threeRoutesForPlayer[routeCardChosen-1] = null;
                 routeCardsChosen++;
@@ -197,9 +199,11 @@ public class PlayerInteraction {
 
     private void displayTrackOwnership(Player player) {
         //print list of owned tracks
+        System.out.println("-------------OWNED TRACKS-------------");
         for(Track track : player.viewOwnedTracks()) {
             System.out.println(track);
         }
+        System.out.println("--------------------------------------");
     }
 
     private void displayTrainsLeft(Player player) {
@@ -214,9 +218,11 @@ public class PlayerInteraction {
 
     private void displayShop(TrainCard[] shop) {
         //print shop
+        System.out.println("---SHOP---");
         for(int i = 0; i < 5; i++) {
             System.out.println(i+1 + ". " + shop[i].color);
         }
+        System.out.println("----------");
     }
 
     private void displayHand(Player player) {
