@@ -9,7 +9,7 @@ import java.util.Collections;
 public class Board {
 
     private Graph graph;
-    private TrainCard[] shop = new TrainCard[5]; // Add edge cases to reshuffle the shop
+    private TrainCard[] shop = new TrainCard[5];
     private Deque<Card> trainCardDeck;
     private List<Card> trainCardDiscard;
     private Deque<Card> routeCardDeck;
@@ -111,8 +111,7 @@ public class Board {
     }
 
     public Track getTrackFromCities(Integer city1, Integer city2) {
-        return graph.graph[city1][city2].getFirst();
-
+        return graph.getTrackFromCities(city1, city2);
     }
 
     private void addTracks() {
@@ -285,12 +284,8 @@ public class Board {
         }
     }
 
-    public void removeTrack(int i, int j) {
-        graph.removeTrack(i, j);
-    }
-
-    public void removeTrack(int i, int j, Track track) {
-        graph.removeTrack(i, j, track);
+    public void removeTrack(Track track) {
+        graph.removeTrack(track);
     }
 
     public List<Integer> dijkstraSearch(City startCity, City endCity) {

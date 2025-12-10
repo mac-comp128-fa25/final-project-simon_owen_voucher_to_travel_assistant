@@ -5,21 +5,31 @@ import java.util.Map;
 
 public class Graph {
 
-    public ArrayList<Track>[][] graph;
+    public ArrayList<Track>[] graph;
     private int numVertices = City.values().length;
     public Map<City,Integer> cityIndexMap;
     public Map<Integer,City> indexCityMap;
     
     public Graph() {
-        graph = (ArrayList<Track>[][]) new ArrayList[numVertices][numVertices];
-        initalizeGraph();
+        graph = (ArrayList<Track>[]) new ArrayList[numVertices];
         cityIndexMap = new HashMap<>(numVertices);
         indexCityMap = new HashMap<>(numVertices);
         addCityIndices();
+        initalizeGraph();
     }
 
     public List<Track> getTracks(int i, int j) {
-        return graph[i][j];
+        List<Track> list = new ArrayList<>();
+        for(Track track : graph[i]) {
+            if(track.endCity == indexCityMap.get(j)) {
+                list.add(track);
+            }
+        }
+        return list;
+    }
+
+    public int getNumVertices() {
+        return numVertices;
     }
 
         private void addCityIndices() {
@@ -99,43 +109,87 @@ public class Graph {
 
     private void initalizeGraph() {
         for(int i = 0; i < numVertices; i++) {
-            for(int j = 0; j < numVertices; j++) {
-                graph[i][j] = new ArrayList<>();
-            }
+            graph[i] = new ArrayList<>();
         }
     }
 
     public void addTrack(int i, int j, int length, TrainColor color) {
-        graph[i][j].add(new Track(indexCityMap.get(i), indexCityMap.get(j), length, color));
-        graph[j][i].add(new Track(indexCityMap.get(j), indexCityMap.get(i), length, color));
+        graph[i].add(new Track(indexCityMap.get(i), indexCityMap.get(j), length, color));
+        graph[j].add(new Track(indexCityMap.get(j), indexCityMap.get(i), length, color));
     }
 
-    public void removeTrack(int i, int j, Track track) {
-        if(graph[i][j].contains(track)) {
-            graph[i][j].remove(track);
-            graph[j][i].remove(track);
+    public void removeTrack(Track track) {
+        for(Track track1 : graph[cityIndexMap.get(track.startCity)]) {
+            if(track1.endCity == track.endCity) {
+                graph[cityIndexMap.get(track.startCity)].remove(track1);
+                break;
+            }
         }
-    }
-
-    public void removeTrack(int i, int j) {
-        if(!graph[i][j].isEmpty()) {
-            graph[i][j].removeFirst();
-            graph[j][i].removeFirst();
+        for(Track track2 : graph[cityIndexMap.get(track.endCity)]) {
+            if(track2.endCity == track.startCity) {
+                graph[cityIndexMap.get(track.startCity)].remove(track2);
+                break;
+            }
         }
-    }
-
-    public int getNumVertices() {
-        return numVertices;
     }
 
     public List<int[]> getPathsOutOfCityIndex(int index) {
         List<int[]> cityWeight = new ArrayList<>();
-        for(int i = 0; i < City.values().length; i++) {
-            if(!graph[index][i].isEmpty()) {
-                int[] cityWeightPair = new int[]{i,graph[index][i].getFirst().length};
-                cityWeight.add(cityWeightPair);
-            }
+        for(Track track : graph[index]) {
+            int[] cityWeightPair = new int[]{cityIndexMap.get(track.endCity), track.length};
+            cityWeight.add(cityWeightPair);
         }
         return cityWeight;
     }
+
+    public Track getTrackFromCities(Integer city1, Integer city2) {
+        for(Track track : graph[city1]) {
+            if(track.endCity == indexCityMap.get(city2)) {
+                return track;
+            }
+        }
+        return null;
+    }
+
+    // private void initalizeGraph() {
+    //     for(int i = 0; i < numVertices; i++) {
+    //         for(int j = 0; j < numVertices; j++) {
+    //             graph[i][j] = new ArrayList<>();
+    //         }
+    //     }
+    // }
+
+    // public void addTrack(int i, int j, int length, TrainColor color) {
+    //     graph[i][j].add(new Track(indexCityMap.get(i), indexCityMap.get(j), length, color));
+    //     graph[j][i].add(new Track(indexCityMap.get(j), indexCityMap.get(i), length, color));
+    // }
+
+    // public void removeTrack(int i, int j, Track track) {
+    //     if(graph[i][j].contains(track)) {
+    //         graph[i][j].remove(track);
+    //         graph[j][i].remove(track);
+    //     }
+    // }
+
+    // public void removeTrack(int i, int j) {
+    //     if(!graph[i][j].isEmpty()) {
+    //         graph[i][j].removeFirst();
+    //         graph[j][i].removeFirst();
+    //     }
+    // }
+
+    // public int getNumVertices() {
+    //     return numVertices;
+    // }
+
+    // public List<int[]> getPathsOutOfCityIndex(int index) {
+    //     List<int[]> cityWeight = new ArrayList<>();
+    //     for(int i = 0; i < City.values().length; i++) {
+    //         if(!graph[index][i].isEmpty()) {
+    //             int[] cityWeightPair = new int[]{i,graph[index][i].getFirst().length};
+    //             cityWeight.add(cityWeightPair);
+    //         }
+    //     }
+    //     return cityWeight;
+    // }
 }
