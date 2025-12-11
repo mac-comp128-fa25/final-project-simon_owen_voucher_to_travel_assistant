@@ -8,6 +8,7 @@ public class PlayerInteraction {
     private Queue<Player> players;
     private Opponent opponent;
     private boolean opponentsDesperate = false;
+    private boolean gameOver = false;
 
     public PlayerInteraction(int numberOfPlayers, int numberOfBots) {
         board = new Board();
@@ -21,9 +22,25 @@ public class PlayerInteraction {
         }
     }
 
+    private void checkEndGame() {
+        for(Player player : players) {
+            if(player.getTrainsLeft() <= 2) {
+                gameOver = true;
+            }
+        }
+        if(gameOver) {
+            for(Player player : players) {
+                calculateFinalScore(player);
+            }
+        }
+    }
+
+    private void calculateFinalScore(Player player) {
+        player.getRoutes();
+    }
+
     public void playGame() {
         Scanner sc = new Scanner(System.in);
-        boolean gameOver = false;
 
         for(Player player : players) {
             if(player instanceof Opponent) {
@@ -56,6 +73,7 @@ public class PlayerInteraction {
                 // Check for gameover conditions
                 players.add(currentPlayer);
             }
+            checkEndGame();
         }
     }
 

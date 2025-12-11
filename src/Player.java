@@ -9,17 +9,18 @@ public class Player {
 
     private int score;
     private Map<TrainColor,Integer> hand;
-    private Set<RouteCard> routes;
+    private Set<RouteCard> unCompletedRoutes;
     private List<Track> ownedTracks;
     private Map<Integer,Integer> scoringGuide;
     private int trains = 45;
     private int moves = 2;
     private String name;
+    private Set<RouteCard> completedRoutes;
 
     public Player(String name) {
         this.name = name;
         initializeHand();
-        routes = new HashSet<>();
+        unCompletedRoutes = new HashSet<>();
         ownedTracks = new ArrayList<>();
         makeScoringGuide();
     }
@@ -45,8 +46,12 @@ public class Player {
         return ownedTracks;
     }
 
+    public void checkForCompletedRoutes() {
+        //TODO
+    }
+
     public Set<RouteCard> getRoutes() {
-        return routes;
+        return unCompletedRoutes;
     }
 
     public String getName() {
@@ -90,7 +95,7 @@ public class Player {
     }
 
     public void drawRouteCard(RouteCard card) {
-        routes.add(card);
+        unCompletedRoutes.add(card);
     }
 
     public void buyTrack(City startCity, City endCity, int length, TrainColor color) {
