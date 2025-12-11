@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.PriorityQueue;
 
@@ -22,30 +23,43 @@ public class Opponent extends Player{
         //1. if player has completed all routes:
         if(tracksNeeded.isEmpty() && movesLeft >= 2) {
             takeRouteCards(1);
+            makeMoves(2);
             System.out.println("Bot took route cards");
         }
         //2. if able, play a track:
-        else if(decideWhichTrackToBuy() && movesLeft >= 2) {
-            System.out.println("Bot played track");
+        else if(decideWhichTrackToBuy()) {
+            makeMoves(2);
+            System.out.println("Bot played track: "+ getLastTrackBought());
         }
         //3. if not able, 
         else {
-            decideWhichCardToTake();
-            System.out.println("Bot drew cards");
+            TrainColor cardColor = decideWhichCardToTake();
+            System.out.println("Bot drew a " + cardColor + " card");
         }
     }
 
     private boolean decideWhichTrackToBuy() {
         //if opponent can purchase priority track, buy that one
         //else, check priority queue for any tracks the opponent can buy and buy them
+        HashSet<TrainColor> savedColors = new HashSet<>();
+        if(getMovesLeft() < 2) {
+            return false;
+        }
         for(RoutePath route : tracksNeeded) {
-            for(Track track : route.getTracks()) {
-                if(board.buildTrain(this, track.startCity, track.endCity, track.color)) {
-                    removeAllInstancesOfTrack(track);
-                    if(route.getTracks().isEmpty()) {
-                        tracksNeeded.remove(route);
+            for(Track track : route.getTracks()) { //Implement off-limits colors set
+                if(!savedColors.contains(track.color)) {
+                    if(board.buildTrain(this, track.startCity, track.endCity, track.color)) {
+                        removeAllInstancesOfTrack(track);
+                        if(route.getTracks().isEmpty()) {
+                            tracksNeeded.remove(route);
+                        }
+                        return true;
+                    } else {
+                        savedColors.add(track.color);
+                        if(savedColors.size() == 9) {
+                            return false;
+                        }
                     }
-                    return true;
                 }
             }
         }
@@ -58,7 +72,7 @@ public class Opponent extends Player{
         }
     }
 
-    private void decideWhichCardToTake() {
+    private TrainColor decideWhichCardToTake() {
         //if desperate, check shop for wilds and take if able
         //if shop has priority color, take that color from the shop
         //else, check the shop for any other lower priority colors and take if available
@@ -68,6 +82,7 @@ public class Opponent extends Player{
                 if(board.viewShop()[i].color == TrainColor.WILD) {
                     board.drawTrainCardFromShop((Player) this, i);
                     makeMoves(2);
+                    return TrainColor.WILD;
                 }
             }
         } else if(hasActions()) {
@@ -75,17 +90,17 @@ public class Opponent extends Player{
                 for(Track track : route.getTracks()) {
                     for(int i = 0; i < 5; i++) {
                         if(track.color == board.viewShop()[i].color && hasActions()) {
-                            board.drawTrainCardFromShop((Player) this, i);
+                            board.drawTrainCardFromShop((Player) this, i); // TODO: THE BOT WILL DRAW A WILD CARD HERE IF IT HAS A WILD TRACK IT NEEDS TO BUY, this only costs it 1 action and it does not need wilds to buy wild tracks
                             makeMoves(1);
-                            break;
+                            return track.color;
                         }
                     }
                 }
             }
-        } else {
-            board.drawTopTrainCard((Player) this);
-            makeMoves(1);
         }
+        TrainColor cardColor = board.drawTopTrainCard((Player) this);
+        makeMoves(1);
+        return cardColor; // How do we know which card was removed? Should we have draw top train card return the color of the card? 
     }
 
     public void takeOpponentTurn() {
@@ -112,6 +127,7 @@ public class Opponent extends Player{
     }
 
     private void takeRouteCards(int minimum) {
+        System.out.println("Opponent drew route cards");
         RouteCard[] routeCards = board.viewThreeRoutes();
         if(desperate) {
             drawLowestValue(routeCards);
@@ -130,7 +146,6 @@ public class Opponent extends Player{
                 }
             }
         }
-        makeMoves(2);
     }
 
     private void drawLowestValue(RouteCard[] routeCards) {

@@ -275,13 +275,14 @@ public class Board {
         return -1;
     }
 
-    public void drawTopTrainCard(Player player) {
+    public TrainColor drawTopTrainCard(Player player) {
         TrainCard card = (TrainCard) trainCardDeck.pop();
         player.drawTrainCard(card);
         if(trainCardDeck.isEmpty()) {
             trainCardDeck = shuffle(trainCardDiscard);
             trainCardDiscard = new ArrayList<>();
         }
+        return card.color;
     }
 
     public void removeTrack(Track track) {

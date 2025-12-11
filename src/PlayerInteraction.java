@@ -17,6 +17,7 @@ public class PlayerInteraction {
         }
         for(int i = 0; i<numberOfBots; i++) {
             opponent = new Opponent(board, "OP: " + i+1);
+            players.add(opponent);
         }
     }
 
@@ -40,9 +41,13 @@ public class PlayerInteraction {
             checkDesperation();
             Player currentPlayer = players.remove();
             if(currentPlayer instanceof Opponent) {
+                System.out.println("It's the bot's turn!!!");
                 opponent = (Opponent) currentPlayer;
                 opponent.setDesperation(opponentsDesperate);
+                displayHand(opponent);
+                displayTrackOwnership(opponent);
                 opponent.takeOpponentTurn();
+                opponent.endTurn();
                 players.add(currentPlayer);
             } else {
                 displayBoardState();
@@ -240,7 +245,7 @@ public class PlayerInteraction {
     }
 
     public static void main(String[] args) {
-        PlayerInteraction io = new PlayerInteraction(1, 1);
+        PlayerInteraction io = new PlayerInteraction(0, 1);
         io.playGame();
     }
 }
