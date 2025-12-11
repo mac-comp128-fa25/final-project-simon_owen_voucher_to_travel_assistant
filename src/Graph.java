@@ -32,7 +32,7 @@ public class Graph {
         return numVertices;
     }
 
-        private void addCityIndices() {
+    private void addCityIndices() {
         cityIndexMap.put(City.ATLANTA, 0);
         cityIndexMap.put(City.BOSTON, 1);
         cityIndexMap.put(City.CALGARY, 2);

@@ -349,10 +349,6 @@ public class Board {
         }
     }
 
-    public void discardRouteCard(Player player, RouteCard card) {
-        
-    }
-
     public boolean buildTrain(Player player, City startCity, City endCity, TrainColor color) {
         List<Track> validTracks = graph.getTracks(graph.cityIndexMap.get(startCity), graph.cityIndexMap.get(endCity));
         for(Track track : validTracks) {

@@ -8,6 +8,7 @@ public class Opponent extends Player{
     private Board board;
     private PriorityQueue<RoutePath> tracksNeeded;
     private boolean desperate = false;
+    private TrainColor universalWildColor = TrainColor.WILD;
 
     public Opponent(Board board, String name) {
         super(name);
@@ -47,23 +48,46 @@ public class Opponent extends Player{
         }
         for(RoutePath route : tracksNeeded) {
             for(Track track : route.getTracks()) { //Implement off-limits colors set
-                if(!savedColors.contains(track.color)) {
-                    if(board.buildTrain(this, track.startCity, track.endCity, track.color)) {
+                if(track.color != TrainColor.WILD) {
+                    if(!savedColors.contains(track.color)) {
+                        if(board.buildTrain(this, track.startCity, track.endCity, track.color)) {
+                            removeAllInstancesOfTrack(track);
+                            if(route.getTracks().isEmpty()) {
+                                tracksNeeded.remove(route);
+                            }
+                            return true;
+                        } else {
+                            savedColors.add(track.color);
+                            if(savedColors.size() == 9) {
+                                return false;
+                            }
+                        }
+                    }
+                } else {
+                    if(board.buildTrain(this, track.startCity, track.endCity, universalWildColor)) {
                         removeAllInstancesOfTrack(track);
                         if(route.getTracks().isEmpty()) {
                             tracksNeeded.remove(route);
                         }
                         return true;
-                    } else {
-                        savedColors.add(track.color);
-                        if(savedColors.size() == 9) {
-                            return false;
-                        }
                     }
                 }
             }
         }
+        setUniversalColor(savedColors);
         return false;
+    }
+
+    private void setUniversalColor(HashSet<TrainColor> savedColors) {
+        int highestCount = -1;
+        for(TrainColor color : getHand().keySet()) {
+            if(!savedColors.contains(color) && color != TrainColor.WILD) {
+                if(getHand().get(color) > highestCount) {
+                    highestCount = getHand().get(color);
+                    universalWildColor = color;
+                }
+            }
+        }
     }
 
     private void removeAllInstancesOfTrack(Track track) {
@@ -114,9 +138,6 @@ public class Opponent extends Player{
             board.drawTopTrainCard(this);
         }
         takeRouteCards(2);
-        for(RouteCard card : getRoutes()) {
-            addRouteToPQ(card);
-        }
     }
 
     private void addRouteToPQ(RouteCard card) {
@@ -134,6 +155,7 @@ public class Opponent extends Player{
         } else {
             int cardsDrawn = 0;
             for(RouteCard route : routeCards) {
+                System.out.println(route);
                 if(takeRoute(route)) {
                     drawRouteCard(route);
                     addRouteToPQ(route);
@@ -157,7 +179,6 @@ public class Opponent extends Player{
             }
         }
         drawRouteCard(lowestScore);
-        addRouteToPQ(lowestScore);
     }
 
     private boolean takeRoute(RouteCard card) {
