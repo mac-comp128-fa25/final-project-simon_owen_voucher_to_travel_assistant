@@ -1,21 +1,16 @@
 import java.util.PriorityQueue;
 import java.util.List;
 
-public class RoutePath implements Comparable<RoutePath>{
+public class RoutePath extends RouteCard implements Comparable<RoutePath>{
 
     private PriorityQueue<Track> tracks;
-    private int points;
 
-    public RoutePath(List<Track> unorganizedTracks, int points) {
-        this.points = points;
+    public RoutePath(City startCity, City endCity, List<Track> unorganizedTracks, int points) {
+        super(startCity, endCity, points);
         tracks = new PriorityQueue<>(new TrackComparator());
         for(Track track : unorganizedTracks) {
             tracks.add(track);
         }
-    }
-
-    public int getPoints() {
-        return points;
     }
 
     public PriorityQueue<Track> getTracks() {
@@ -31,6 +26,6 @@ public class RoutePath implements Comparable<RoutePath>{
     }
 
     public int compareTo(RoutePath path2) {
-        return path2.points - points;
+        return path2.pointValue - this.pointValue;
     }
 }

@@ -48,13 +48,14 @@ public class Opponent extends Player{
             return false;
         }
         for(RoutePath route : tracksNeeded) {
-            for(Track track : route.getTracks()) { //Implement off-limits colors set
+            for(Track track : route.getTracks()) {
                 if(track.color != TrainColor.WILD) {
                     if(!savedColors.contains(track.color)) {
                         if(board.buildTrain(this, track.startCity, track.endCity, track.color)) {
                             removeAllInstancesOfTrack(track);
                             if(route.getTracks().isEmpty()) {
-                                tracksNeeded.remove(route);
+                                tracksNeeded.remove(route); // If the route is complete we should add to our completed routes set
+                                getCompletedRoutes().add(route);
                             }
                             return true;
                         } else {
@@ -144,7 +145,7 @@ public class Opponent extends Player{
     private void addRouteToPQ(RouteCard card) {
         List<Track> tracks = findBestPath(card.startCity, card.endCity);
         if(tracks != null) {
-            tracksNeeded.add(new RoutePath(tracks, card.pointValue));
+            tracksNeeded.add(new RoutePath(card.startCity, card.endCity, tracks, card.pointValue));
         }
     }
 
