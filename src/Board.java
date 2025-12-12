@@ -349,6 +349,10 @@ public class Board {
         }
     }
 
+    public void discardUndrawnRoutes(List<RouteCard> routes) {
+        routeCardDiscard.addAll(routes);
+    }
+
     public boolean buildTrain(Player player, City startCity, City endCity, TrainColor color) {
         List<Track> validTracks = graph.getTracks(graph.cityIndexMap.get(startCity), graph.cityIndexMap.get(endCity));
         for(Track track : validTracks) {
@@ -373,13 +377,25 @@ public class Board {
         }
     }
 
-    public RouteCard[] viewThreeRoutes() {
-        RouteCard[] threeRoutes = new RouteCard[3];
+    public boolean checkRouteDeck() {
+        if(routeCardDeck.isEmpty() && routeCardDiscard.isEmpty()) {
+            return false;
+        } else if(routeCardDeck.isEmpty()) {
+            routeCardDeck = shuffle(routeCardDiscard);
+            routeCardDiscard = new ArrayList<>();
+        }
+        return true;
+    }
+
+    public List<RouteCard> viewThreeRoutes() { 
+        if(!checkRouteDeck()) {
+            return null;
+        }
+        List<RouteCard> threeRoutes = new ArrayList<>();
         for(int i = 0; i < 3; i++) {
-            threeRoutes[i] = (RouteCard) routeCardDeck.pop();
-            if(routeCardDeck.isEmpty()) {
-                routeCardDeck = shuffle(routeCardDiscard);
-                routeCardDiscard = new ArrayList<>();
+            threeRoutes.add((RouteCard) routeCardDeck.pop());
+            if(!checkRouteDeck()) {
+                return threeRoutes;
             }
         }
         return threeRoutes;

@@ -1,5 +1,6 @@
 import java.util.ArrayDeque;
 import java.util.Queue;
+import java.util.List;
 import java.util.Scanner;
 
 public class PlayerInteraction {
@@ -28,15 +29,11 @@ public class PlayerInteraction {
                 gameOver = true;
             }
         }
-        if(gameOver) {
-            for(Player player : players) {
-                calculateFinalScore(player);
-            }
-        }
     }
 
     private void calculateFinalScore(Player player) {
         player.getRoutes();
+        System.out.println("Player: " + player.getName() + " final score: idk yet tbh");
     }
 
     public void playGame() {
@@ -75,6 +72,22 @@ public class PlayerInteraction {
             }
             checkEndGame();
         }
+
+        while(!players.isEmpty()) {
+            Player currentPlayer = players.remove();
+            if(currentPlayer instanceof Opponent) {
+                System.out.println("Opponent: " + opponent.getName() + "'s final turn!");
+                Opponent opponent = (Opponent) currentPlayer;
+                opponent.setDesperation(true);
+                opponent.takeOpponentTurn();
+                opponent.endTurn();
+            } else {
+                displayBoardState();
+                System.out.println(currentPlayer.getName());
+                takePlayerTurn(currentPlayer, sc);
+            }
+            calculateFinalScore(currentPlayer);
+        }
     }
 
     private void checkDesperation() {
@@ -93,41 +106,45 @@ public class PlayerInteraction {
     }
 
     private void takeRouteCards(Player player, Scanner sc, int requiredCards) {
-        RouteCard[] threeRoutesForPlayer = board.viewThreeRoutes();
+        List<RouteCard> threeRoutesForPlayer = board.viewThreeRoutes();
 
-        boolean atLeastTwoRouteCards = false;
-        int cardsChosen = 0;
+        boolean atLeastNRouteCards = false;
         int routeCardsChosen = 0;
-        while(!atLeastTwoRouteCards && cardsChosen < 3) {
-            for(int i = 0; i < 3; i++) {
-                if(threeRoutesForPlayer[i] != null ) {
-                    System.out.println((i+1) + ". " + threeRoutesForPlayer[i]);
+        while(!atLeastNRouteCards && routeCardsChosen < 3) {
+            String optionsString = "(";
+            for(RouteCard route : threeRoutesForPlayer) {
+                int optionIndex = threeRoutesForPlayer.indexOf(route)+1;
+                if(optionIndex == threeRoutesForPlayer.size()) {
+                    optionsString = optionsString + optionIndex;
                 } else {
-                    System.out.println((i+1) + ". ALREADY CHOSEN");
+                    optionsString = optionsString + optionIndex + ", ";
                 }
+                
+                System.out.println(optionIndex + ". " + route);
             }
-            System.out.print("Which Route Card Would you Like to Choose? (1,2,3) ");
+            optionsString += ") ";
+            System.out.print("Which Route Card Would you Like to Choose? " + optionsString);
             int routeCardChosen = sc.nextInt();
-            if(routeCardChosen > 3 || routeCardChosen < 1) {
+            if(routeCardChosen > threeRoutesForPlayer.size()+1 || routeCardChosen < 1) {
                 System.out.println("NAH");
-            } else if(threeRoutesForPlayer[routeCardChosen-1] == null) {
-                System.out.println("You already choose this route goofy ahh");
             } else {
-                cardsChosen++;
-                player.drawRouteCard(threeRoutesForPlayer[routeCardChosen-1]);
-                threeRoutesForPlayer[routeCardChosen-1] = null;
+                player.drawRouteCard(threeRoutesForPlayer.get(routeCardChosen-1));
+                threeRoutesForPlayer.remove(routeCardChosen-1);
                 routeCardsChosen++;
                 if(routeCardsChosen >= requiredCards) {
                     System.out.print("Would you like to continue? (Y/N) ");
                     String response = sc.next();
                     if(!response.toUpperCase().equals("Y")) {
-                        atLeastTwoRouteCards = true;
+                        atLeastNRouteCards = true;
                     }
                 } else if(routeCardsChosen == 3) {
-                    atLeastTwoRouteCards = true;
+                    atLeastNRouteCards = true;
                 }
             }
         }
+
+        //Discard Routes player does not choose
+        board.discardUndrawnRoutes(threeRoutesForPlayer);
     }
 
     public void takePlayerTurn(Player player, Scanner sc) {

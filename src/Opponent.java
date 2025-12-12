@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.PriorityQueue;
 
@@ -22,7 +23,7 @@ public class Opponent extends Player{
 
     public void getRecommendedMove(int movesLeft) {
         //1. if player has completed all routes:
-        if(tracksNeeded.isEmpty() && movesLeft >= 2) {
+        if(tracksNeeded.isEmpty() && movesLeft >= 2 && board.checkRouteDeck()) { //Add condition for if route card deck is empty
             takeRouteCards(1);
             makeMoves(2);
             System.out.println("Bot took route cards");
@@ -149,16 +150,19 @@ public class Opponent extends Player{
 
     private void takeRouteCards(int minimum) {
         System.out.println("Opponent drew route cards");
-        RouteCard[] routeCards = board.viewThreeRoutes();
+        List<RouteCard> routeCards = board.viewThreeRoutes();
         if(desperate) {
             drawLowestValue(routeCards);
         } else {
             int cardsDrawn = 0;
-            for(RouteCard route : routeCards) {
+            Iterator<RouteCard> routeIterator = routeCards.iterator();
+            while(routeIterator.hasNext()) {
+                RouteCard route = routeIterator.next();
                 System.out.println(route);
                 if(takeRoute(route)) {
                     drawRouteCard(route);
                     addRouteToPQ(route);
+                    routeIterator.remove();
                     cardsDrawn++;
                 }
             }
@@ -168,17 +172,19 @@ public class Opponent extends Player{
                 }
             }
         }
+        board.discardUndrawnRoutes(routeCards);
     }
 
-    private void drawLowestValue(RouteCard[] routeCards) {
+    private void drawLowestValue(List<RouteCard> routeCards) {
         RouteCard lowestScore = new RouteCard(null, null, 100);
-        for(int i = 0; i < 3; i++) {
-            if(routeCards[i].pointValue < lowestScore.pointValue) {
-                lowestScore = routeCards[i];
-                routeCards[i] = new RouteCard(null, null, 100);
+        for(RouteCard route : routeCards) {
+            if(route.pointValue < lowestScore.pointValue) {
+                lowestScore = route;
             }
         }
+        routeCards.remove(lowestScore);
         drawRouteCard(lowestScore);
+        addRouteToPQ(lowestScore);
     }
 
     private boolean takeRoute(RouteCard card) {
