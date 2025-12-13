@@ -25,13 +25,6 @@ public class Board {
         setup();
     }
 
-    //temp
-    public Deque<Card> getTrainCardDeck() {
-        return trainCardDeck;
-    }
-    public List<Card> getTrainDiscard() {
-        return trainCardDiscard;
-    }
 
     /**
      * Returns a track between two cities
@@ -110,7 +103,7 @@ public class Board {
         return graph.getAllTracks();
     }
 
-    
+
     /**
      * Removes a track from the graph
      * @param track the track to be removed
@@ -255,7 +248,6 @@ public class Board {
         }
         return threeRoutes;
     }
-
 
     private void setup() {
         // Initialize the Decks and Shop

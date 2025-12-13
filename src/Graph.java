@@ -22,7 +22,7 @@ public class Graph {
         initalizeGraph();
     }
 
-    
+
     /**
      * Adds a track to the graph
      * @param i the start vertex of the track
@@ -95,6 +95,7 @@ public class Graph {
         return allTracks;
     }
 
+
     /**
      * Gets all cityweight pairs out of a specific city
      * @param index the index of the city
@@ -109,6 +110,7 @@ public class Graph {
         }
         return cityWeight;
     }
+
 
     /**
      * Returns a track between two cities
@@ -209,5 +211,4 @@ public class Graph {
             graph[i] = new ArrayList<>();
         }
     }
-
 }

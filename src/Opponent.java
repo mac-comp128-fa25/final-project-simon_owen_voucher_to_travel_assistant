@@ -35,7 +35,6 @@ public class Opponent extends Player{
         desperate = desperation;
     }
 
-
     /**
      * Has this opponent perform a move based on the number of actions it has left
      */
@@ -63,35 +62,41 @@ public class Opponent extends Player{
     }
 
     private void getRecommendedMove(int movesLeft) {
-        //1. if player has completed all routes:
+        //1. if opponent has completed all routes:
         if(tracksNeeded.isEmpty() && movesLeft >= 2 && board.checkRouteDeck() && !desperate) {
             takeRouteCards(1);
             makeMoves(2);
-            System.out.println("Bot took route cards");
+            System.out.println(getName() + " took route cards");
         }
         //2. if able, play a track:
         else if(decideWhichTrackToBuy()) {
             makeMoves(2);
-            System.out.println("Bot played track: "+ getLastTrackBought());
-        } else if(tracksNeeded.isEmpty() && buyRandomTrack()) {
+            System.out.println(getName() + " played track: "+ getLastTrackBought());
+        } 
+        //3. if the bot doesn't have any routes, buy a random track:
+        else if(tracksNeeded.isEmpty() && buyRandomTrack()) {
             makeMoves(2);
-            System.out.println("Bot played track: "+ getLastTrackBought());
+            System.out.println(getName() + " played track: "+ getLastTrackBought());
         }
-        //3. if not able, 
+        //4. if not able: 
         else if(board.checkTrainCardDeck()) {
             TrainColor cardColor = decideWhichCardToTake();
-            System.out.println("Bot drew a " + cardColor + " card");
-        } else if(movesLeft == 2 && buyRandomTrack()) {
+            if(cardColor != null) {
+                System.out.println(getName() + " drew a " + cardColor + " card");
+            }
+        } 
+        //5. if the deck is empty:
+        else if(movesLeft == 2 && buyRandomTrack()) {
             makeMoves(2);
-        } else {
+        } 
+        //6. else, skip turn:
+        else {
             makeMoves(movesLeft);
-            System.out.println("Bot passes the turn because its stupid");
+            System.out.println(getName() + " passes the turn because it's stupid");
         }
     }
 
     private boolean decideWhichTrackToBuy() {
-        //if opponent can purchase priority track, buy that one
-        //else, check priority queue for any tracks the opponent can buy and buy them
         HashSet<TrainColor> savedColors = new HashSet<>();
         if(getMovesLeft() < 2) {
             return false;
@@ -103,7 +108,7 @@ public class Opponent extends Player{
                         if(board.buildTrain(this, track.startCity, track.endCity, track.color)) {
                             removeAllInstancesOfTrack(track);
                             if(route.getTracks().isEmpty()) {
-                                tracksNeeded.remove(route); // If the route is complete we should add to our completed routes set
+                                tracksNeeded.remove(route);
                                 getCompletedRoutes().add(route);
                             }
                             return true;
@@ -159,10 +164,6 @@ public class Opponent extends Player{
     }
 
     private TrainColor decideWhichCardToTake() {
-        //if desperate, check shop for wilds and take if able
-        //if shop has priority color, take that color from the shop
-        //else, check the shop for any other lower priority colors and take if available
-        //else, draw from the top of the deck
         if(desperate && getMovesLeft() >= 2) {
             for(int i = 0; i < 5; i++) {
                 if(board.viewShop()[i].color == TrainColor.WILD) {
@@ -176,7 +177,7 @@ public class Opponent extends Player{
                 for(Track track : route.getTracks()) {
                     for(int i = 0; i < 5; i++) {
                         if(track.color == board.viewShop()[i].color && hasActions()) {
-                            board.drawTrainCardFromShop((Player) this, i); // TODO: THE BOT WILL DRAW A WILD CARD HERE IF IT HAS A WILD TRACK IT NEEDS TO BUY, this only costs it 1 action and it does not need wilds to buy wild tracks
+                            board.drawTrainCardFromShop((Player) this, i);
                             makeMoves(1);
                             return track.color;
                         }
@@ -186,7 +187,7 @@ public class Opponent extends Player{
         }
         TrainColor cardColor = board.drawTopTrainCard((Player) this);
         makeMoves(1);
-        return cardColor; // How do we know which card was removed? Should we have draw top train card return the color of the card? 
+        return cardColor;
     }
 
     private void addRouteToPQ(RouteCard card) {
@@ -261,7 +262,6 @@ public class Opponent extends Player{
     }
 
     private int calculateOverlap(RouteCard route) {
-        //for each track in tracksNeeded, if route contains that track, increment by 1
         int overlap = 0;
         for(RoutePath path : tracksNeeded) {
             for(Track track1 : path.getTracks()) {
@@ -275,14 +275,11 @@ public class Opponent extends Player{
         return overlap;
     }
 
-
     private List<Track> reroute(City startCity, City endCity) {
         return findBestPath(endCity, startCity);
     }
 
     private List<Track> findBestPath(City firstCity, City lastCity) {
-        //side note that this method will not consider tracks the opponent already owns, leading to inefficient play
-
         List<Integer> cities = board.dijkstraSearch(firstCity, lastCity);
         if(cities.size() == 1) {
             return null;
@@ -302,6 +299,4 @@ public class Opponent extends Player{
         }
         return tracks;
     }
-
-
 }

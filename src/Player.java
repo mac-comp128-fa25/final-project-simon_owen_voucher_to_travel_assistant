@@ -35,12 +35,14 @@ public class Player {
         return ownedTracks;
     }
 
+    
     /**
      * @return set of all routes the player has not completed
      */
     public Set<RouteCard> getRoutes() {
         return incompletedRoutes;
     }
+
 
     /**
      * @return set of all routes the player has completed
@@ -49,12 +51,14 @@ public class Player {
         return completedRoutes;
     }
 
+
     /**
      * @return name of player
      */
     public String getName() {
         return name;
     }
+
 
     /**
      * @return trains the player has left
@@ -63,12 +67,14 @@ public class Player {
         return trains;
     }
 
+
     /**
      * @return player's score
      */
     public int getScore() {
         return score;
     }
+
 
     /**
      * @return true if player has actions left, false otherwise
@@ -77,12 +83,14 @@ public class Player {
         return moves > 0;
     }
 
+
     /**
      * @return amount of moves player has left
      */
     public int getMovesLeft() {
         return moves;
     }
+
 
     /**
      * @return Players hand, a hashmap where train card colors -> amount in hand
@@ -91,12 +99,14 @@ public class Player {
         return hand;
     }
 
+
     /**
      * resets player's moves
      */
     public void endTurn() {
         moves = 2;
     }
+
 
     /**
      * @param actionsSpent the amount of moves to use
@@ -113,12 +123,14 @@ public class Player {
         score += points;
     }
 
+
     /**
      * @param card route card to add to the players set of incomplete route cards
      */
     public void drawRouteCard(RouteCard card) {
         incompletedRoutes.add(card);
     }
+
 
     /**
      * Adds a track to player's list of owned tracks
@@ -130,6 +142,7 @@ public class Player {
     public void buyTrack(City startCity, City endCity, int length, TrainColor color) {
         ownedTracks.add(new Track(startCity, endCity, length, color));
     }
+
     
     /**
      * @return last track the player bought
@@ -145,6 +158,7 @@ public class Player {
     public void drawTrainCard(TrainCard card) {
         hand.put(card.color, hand.get(card.color)+1);
     }
+
 
     /**
      * Determines if the player can buy a track
@@ -188,6 +202,7 @@ public class Player {
         return score;
     }
 
+
     /**
      * Checks if this player has completed any of their routes, if so it moves the route from the set of incomplete routes to
      * the set of complete routes.
@@ -208,6 +223,7 @@ public class Player {
             }
         } 
     }
+
 
     /**
      * Recursive Helper method to find if there exists a path from one city to another given the player's tracks
@@ -262,27 +278,5 @@ public class Player {
             return true;
         }
         return false;
-    }
-
-    public static void main(String[] args) {
-        //Testing checkRoutesCompleted
-        Player testPlayer = new Player("Tester");
-        RouteCard routeCard = new RouteCard(City.LA, City.LR, 17);
-        RouteCard routeCard2 = new RouteCard(City.LA, City.HOUSTON, 13);
-        testPlayer.drawRouteCard(routeCard);
-        testPlayer.drawRouteCard(routeCard2);
-        testPlayer.buyTrack(City.LA, City.SANFRAN, 3, TrainColor.PINK);
-        testPlayer.buyTrack(City.SLC, City.SANFRAN, 5, TrainColor.WHITE);
-        testPlayer.buyTrack(City.SLC, City.DENVER, 3, TrainColor.RED);
-        testPlayer.buyTrack(City.OKC, City.DENVER, 4, TrainColor.RED);
-        testPlayer.buyTrack(City.OKC, City.DALLAS, 2, TrainColor.WILD);
-        testPlayer.buyTrack(City.HOUSTON, City.DALLAS, 1, TrainColor.WILD);
-        testPlayer.buyTrack(City.LA, City.PHOENIX, 3, TrainColor.WILD);
-        testPlayer.buyTrack(City.PHOENIX, City.SANTAFE, 3, TrainColor.WILD);
-        testPlayer.buyTrack(City.SANTAFE, City.OKC, 3, TrainColor.BLUE);
-        testPlayer.buyTrack(City.LR, City.OKC, 2, TrainColor.WILD);
-        testPlayer.checkForCompletedRoutes();
-        System.out.println(testPlayer.getCompletedRoutes());
-
     }
 }

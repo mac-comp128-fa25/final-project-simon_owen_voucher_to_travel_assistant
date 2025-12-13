@@ -41,13 +41,11 @@ public class PlayerInteraction {
             checkDesperation();
             Player currentPlayer = players.remove();
             if(currentPlayer instanceof Opponent) {
-                System.out.println("It's the bot's turn!!!");
+                System.out.println(opponent.getName() + "'s turn!!!");
                 opponent = (Opponent) currentPlayer;
                 opponent.setDesperation(opponentsDesperate);
                 displayHand(opponent);
                 displayTrackOwnership(opponent);
-                System.out.println("Deck Size: " + board.getTrainCardDeck().size());
-                System.out.println("Discard Size: " + board.getTrainDiscard().size());
                 opponent.takeOpponentTurn();
                 opponent.endTurn();
                 players.add(currentPlayer);
@@ -64,7 +62,7 @@ public class PlayerInteraction {
         for(Player player : players) {
             if(player instanceof Opponent) {
                 Opponent opponent = (Opponent) player;
-                System.out.println("Opponent: " + opponent.getName() + "'s final turn!");  
+                System.out.println(opponent.getName() + "'s final turn!");  
                 opponent.takeOpponentTurn();
                 opponent.endTurn();
             } else {
@@ -80,15 +78,15 @@ public class PlayerInteraction {
     private void setUpPlayers(Scanner sc) {
         System.out.println("How many players would you like to have? (3-5) ");
         int playerCount = sc.nextInt();
-        while(playerCount < 1 || playerCount > 5) {
+        while(playerCount < 3 || playerCount > 5) {
             System.out.println("Invalid player count, must be 3, 4, or 5 ");
             playerCount = sc.nextInt();
         }
 
-        System.out.println("How many bots would you like? ");
+        System.out.println("How many ROBOCONDUCTORS would you like? ");
         int botCount = sc.nextInt();
-        while(botCount < 1 || botCount > 5) {
-            System.out.println("Invalid bot count, must be 3, 4, or 5 ");
+        while(botCount < 3 || botCount > 5) {
+            System.out.println("Invalid ROBOCONDUCTOR count, must be 3, 4, or 5 ");
             playerCount = sc.nextInt();
         }
 
@@ -98,14 +96,14 @@ public class PlayerInteraction {
             players.add(new Player("Player: " + playerName));
         }
         for(int i = 0; i<botCount; i++) {
-            opponent = new Opponent(board, "ROBOCONDUCTOR: " + (i+1));
+            opponent = new Opponent(board, "ROBOCONDUCTOR " + (i+1));
             players.add(opponent);
         }
     }
 
     private void checkDesperation() {
         for(Player player : players) {
-            if(player.getTrainsLeft() <= 10) {
+            if(player.getTrainsLeft() <= 6) {
                 opponentsDesperate = true;
             }
         }
@@ -308,10 +306,9 @@ public class PlayerInteraction {
             if(player.getScore() >= winner.getScore()) {
                 winner = player;
             }
-            System.out.println("Player: " + player.getName() + " final score: " + player.getScore());
+            System.out.println("Player: " + player.getName() + "'s final score: " + player.getScore());
         }
         return winner;
-        
     }
 
     public static void main(String[] args) {

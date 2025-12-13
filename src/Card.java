@@ -1,3 +1,1 @@
-public abstract class Card {
-    
-}
+public abstract class Card {}
