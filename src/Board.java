@@ -15,16 +15,253 @@ public class Board {
     private Deque<Card> routeCardDeck;
     private List<Card> routeCardDiscard;
 
+    /**
+     * Object representing the current state of the board including decks of route cards, train cards, the shop, and the
+     * tracks that have not been purchased.
+     */
     public Board() {
         this.graph = new Graph();
         addTracks();
         setup();
     }
 
+    //temp
+    public Deque<Card> getTrainCardDeck() {
+        return trainCardDeck;
+    }
+    public List<Card> getTrainDiscard() {
+        return trainCardDiscard;
+    }
+
+    /**
+     * Returns a track between two cities
+     * @param city1 The start city
+     * @param city2 The end city
+     * @return The first occurence of a track that exists between the two cities, or null if none exist
+     */
+    public Track getTrackFromCities(Integer city1, Integer city2) {
+        return graph.getTrackFromCities(city1, city2);
+    }
+
+
+    /**
+     * Applys Dijkstra's Algorithm to the weighted graph to find the shortest path between two cities
+     * @param startCity the start city
+     * @param endCity the end city
+     * @return A list of integers corresponding to the indices of cities on the fastest path
+     */
+    public List<Integer> dijkstraSearch(City startCity, City endCity) {
+        // Declare Variables:
+        int startCityIndex = graph.cityIndexMap.get(startCity);
+        int endCityIndex = graph.cityIndexMap.get(endCity);
+        int[] currentCityWeightPair;
+        
+        // Initalize Hashmaps:
+        HashMap<Integer, Integer> cityIndexToDistanceMap = new HashMap<>();
+        HashMap<Integer, Integer> cityIndexToPreviousCity = new HashMap<>();
+        
+        // Intitalize Priority Queue:
+        PriorityQueue<int[]> shortestPathQueue = new PriorityQueue<>(new CityWeightComparator());
+        int[] startCityWeight = new int[]{startCityIndex, 0};
+        cityIndexToDistanceMap.put(startCityIndex, 0);
+        cityIndexToPreviousCity.put(startCityIndex, null);
+        shortestPathQueue.add(startCityWeight);
+
+        // While Loop
+        while(!shortestPathQueue.isEmpty()) {
+
+            currentCityWeightPair = shortestPathQueue.remove();
+
+            List<int[]> currentCityWeightPairNeighbors = graph.getPathsOutOfCityIndex(currentCityWeightPair[0]);
+
+            for(int[] neighborCityWeightPair : currentCityWeightPairNeighbors) {
+                if(!cityIndexToPreviousCity.containsKey(neighborCityWeightPair[0])) {
+                    cityIndexToDistanceMap.put(neighborCityWeightPair[0], cityIndexToDistanceMap.get(currentCityWeightPair[0])+neighborCityWeightPair[1]);
+                    cityIndexToPreviousCity.put(neighborCityWeightPair[0], currentCityWeightPair[0]);
+                    int[] updatedNeighborCityWeightPair = new int[]{neighborCityWeightPair[0], cityIndexToDistanceMap.get(neighborCityWeightPair[0])};
+                    shortestPathQueue.add(updatedNeighborCityWeightPair);
+                } else if(cityIndexToDistanceMap.get(neighborCityWeightPair[0]) > cityIndexToDistanceMap.get(currentCityWeightPair[0])+neighborCityWeightPair[1]) {
+                    cityIndexToDistanceMap.put(neighborCityWeightPair[0], cityIndexToDistanceMap.get(currentCityWeightPair[0])+neighborCityWeightPair[1]);
+                    cityIndexToPreviousCity.put(neighborCityWeightPair[0], currentCityWeightPair[0]);
+                }
+            }
+        }
+
+        Deque<Integer> finalCityStack = new ArrayDeque<>();
+        Integer currentCityIndex = endCityIndex;
+        while(currentCityIndex != null) {
+            finalCityStack.push(currentCityIndex);
+            currentCityIndex = cityIndexToPreviousCity.get(currentCityIndex);
+        }
+
+        List<Integer> finalPath = new ArrayList<>();
+        while(!finalCityStack.isEmpty()) {
+            finalPath.add(finalCityStack.pop());
+        }
+
+        return finalPath;
+    }
+
+
+    /**
+     * @return A list of all tracks still in the graph (i.e. tracks that have not been purchased yet)
+     */
+    public List<Track> getAvailableTracks() {
+        return graph.getAllTracks();
+    }
+
+    
+    /**
+     * Removes a track from the graph
+     * @param track the track to be removed
+     */
+    public void removeTrack(Track track) {
+        graph.removeTrack(track);
+    }
+
+
+    /**
+     * @return the shop, an array of five TrainCards
+     */
+    public TrainCard[] viewShop() {
+        return shop;
+    }
+
+
+    /**
+     * @param player The player drawing the card
+     * @param cardIndexInShop the index of the card in the shop array
+     * @return true if successful, false otherwise
+     */
+    public boolean drawTrainCardFromShop(Player player, int cardIndexInShop) {
+        TrainCard card = shop[cardIndexInShop];
+        replaceCardInShop(cardIndexInShop);
+        checkShop();
+        if(card != null) {
+            player.drawTrainCard(card);
+            return true;
+        }
+        return false;
+    }
+
+
+    /**
+     * @param player the player drawing the top card from the Train card deck
+     * @return the traincolor if there are cards in the deck, null otherwise
+     */
+    public TrainColor drawTopTrainCard(Player player) {
+        TrainCard card = (TrainCard) trainCardDeck.pop();
+        player.drawTrainCard(card);
+        if(trainCardDeck.isEmpty()) {
+            trainCardDeck = shuffle(trainCardDiscard);
+            trainCardDiscard = new ArrayList<>();
+            if(trainCardDeck.isEmpty()) {
+                return null;
+            }
+        }
+        return card.color;
+    }
+
+
+    /**
+     * Checks whether a player can build a train between start city and end city, if the player can then the track gets build
+     * @param player the player building the track
+     * @param startCity The city at the start of the track
+     * @param endCity The city at the end of the track
+     * @param color The color of the track the player wants to build
+     * @return true if the player builds the track, false otherwise
+     */
+    public boolean buildTrain(Player player, City startCity, City endCity, TrainColor color) {
+        List<Track> validTracks = graph.getTracks(graph.cityIndexMap.get(startCity), graph.cityIndexMap.get(endCity));
+        for(Track track : validTracks) {
+            if(track.color == color || track.color == TrainColor.WILD) {
+                if(player.spendTrainCards(color, track.length, this)){
+                    player.buyTrack(startCity, endCity, track.length, color);
+                    removeTrack(track);
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+
+    /**
+     * Adds an amount of a certain color card to the discard list
+     * @param quantity the amount of cards to add
+     * @param color the color of the cards
+     */
+    public void addAmountToDiscard(int quantity, TrainColor color) {
+        for(int i = 0; i < quantity; i++) {
+            trainCardDiscard.add(new TrainCard(color));
+        }
+    }
+
+
+    /**
+     * Checks if cards can be drawn from the TrainCard deck
+     * @return true if drawing can happen, false otherwise
+     */
+    public boolean checkTrainCardDeck() {
+        if(trainCardDeck.isEmpty() && trainCardDiscard.isEmpty()) {
+            return false;
+        } else if(trainCardDeck.isEmpty()) {
+            trainCardDeck = shuffle(trainCardDiscard);
+            trainCardDiscard = new ArrayList<>();
+        }
+        return true;
+    }
+
+
+    /**
+     * Adds all undrawn routecards to routeCardDiscard
+     * @param routes the route cards to be discarded
+     */
+    public void discardUndrawnRoutes(List<RouteCard> routes) {
+        routeCardDiscard.addAll(routes);
+    }
+
+
+    /**
+     * Checks if the route card deck can be drawn from
+     * @return true if drawing can happen, false otherwise
+     */
+    public boolean checkRouteDeck() {
+        if(routeCardDeck.isEmpty() && routeCardDiscard.isEmpty()) {
+            return false;
+        } else if(routeCardDeck.isEmpty()) {
+            routeCardDeck = shuffle(routeCardDiscard);
+            routeCardDiscard = new ArrayList<>();
+        }
+        return true;
+    }
+
+
+    /**
+     * @return a list of three route cards from the top of the route card deck
+     * If there are no cards in the deck then returns null
+     * If 1-2 cards in deck then will return a list of that many cards
+     */
+    public List<RouteCard> viewThreeRoutes() { 
+        if(!checkRouteDeck()) {
+            return null;
+        }
+        List<RouteCard> threeRoutes = new ArrayList<>();
+        for(int i = 0; i < 3; i++) {
+            threeRoutes.add((RouteCard) routeCardDeck.pop());
+            if(!checkRouteDeck()) {
+                return threeRoutes;
+            }
+        }
+        return threeRoutes;
+    }
+
+
     private void setup() {
         // Initialize the Decks and Shop
         initializeTrainCardDeck();
         initializeRouteCardDeck();
+        initializeShop();
     }
 
     private void initializeTrainCardDeck() {
@@ -58,6 +295,7 @@ public class Board {
         }
 
         trainCardDeck = shuffle(trainCardDiscard);
+        trainCardDiscard = new ArrayList<>();
     }
 
     private void initializeRouteCardDeck() {
@@ -94,24 +332,13 @@ public class Board {
         routeCardDiscard.add(new RouteCard(City.WINNIPEG, City.LR, 11));
 
         routeCardDeck = shuffle(routeCardDiscard);
+        routeCardDiscard = new ArrayList<>();
     }
 
-    public void initializeShop() {
+    private void initializeShop() {
         for(int i = 0; i < shop.length; i++) {
             shop[i] = (TrainCard) trainCardDeck.pop();
         }
-    }
-
-    public int getIndexFromCity(City city) {
-        return graph.cityIndexMap.get(city);
-    }
-
-    public City getCityFromIndex(int index) {
-        return graph.indexCityMap.get(index);
-    }
-
-    public Track getTrackFromCities(Integer city1, Integer city2) {
-        return graph.getTrackFromCities(city1, city2);
     }
 
     private void addTracks() {
@@ -232,10 +459,6 @@ public class Board {
         }
     }
 
-    public TrainCard[] viewShop() {
-        return shop;
-    }
-
     private void replaceShop() {
         for(int i = 0; i < shop.length; i++) {
             trainCardDiscard.add(shop[i]);
@@ -247,17 +470,6 @@ public class Board {
         }
     }
 
-    public boolean drawTrainCardFromShop(Player player, int cardIndexInShop) {
-        TrainCard card = shop[cardIndexInShop];
-        replaceCardInShop(cardIndexInShop);
-        checkShop();
-        if(card != null) {
-            player.drawTrainCard(card);
-            return true;
-        }
-        return false;
-    }
-
     private void replaceCardInShop(int cardIndexInShop) {
         shop[cardIndexInShop] = (TrainCard) trainCardDeck.pop();
         if(trainCardDeck.isEmpty()) {
@@ -266,142 +478,7 @@ public class Board {
         }
     }
 
-    public int findColorInShop(TrainColor color) {
-        for(int i = 0; i < shop.length; i++) {
-            if(shop[i].color == color) {
-                return i;
-            }
-        }
-        return -1;
-    }
-
-    public TrainColor drawTopTrainCard(Player player) {
-        TrainCard card = (TrainCard) trainCardDeck.pop();
-        player.drawTrainCard(card);
-        if(trainCardDeck.isEmpty()) {
-            trainCardDeck = shuffle(trainCardDiscard);
-            trainCardDiscard = new ArrayList<>();
-        }
-        return card.color;
-    }
-
-    public void removeTrack(Track track) {
-        graph.removeTrack(track);
-    }
-
-    public List<Integer> dijkstraSearch(City startCity, City endCity) {
-        // Declare Variables:
-        int startCityIndex = graph.cityIndexMap.get(startCity);
-        int endCityIndex = graph.cityIndexMap.get(endCity);
-        int[] currentCityWeightPair;
-        
-        // Initalize Hashmaps:
-        HashMap<Integer, Integer> cityIndexToDistanceMap = new HashMap<>();
-        HashMap<Integer, Integer> cityIndexToPreviousCity = new HashMap<>();
-        
-        // Intitalize Priority Queue:
-        PriorityQueue<int[]> shortestPathQueue = new PriorityQueue<>(new CityWeightComparator());
-        int[] startCityWeight = new int[]{startCityIndex, 0};
-        cityIndexToDistanceMap.put(startCityIndex, 0);
-        cityIndexToPreviousCity.put(startCityIndex, null);
-        shortestPathQueue.add(startCityWeight);
-
-        // While Loop
-        while(!shortestPathQueue.isEmpty()) {
-
-            currentCityWeightPair = shortestPathQueue.remove();
-
-            List<int[]> currentCityWeightPairNeighbors = graph.getPathsOutOfCityIndex(currentCityWeightPair[0]);
-
-            for(int[] neighborCityWeightPair : currentCityWeightPairNeighbors) {
-                if(!cityIndexToPreviousCity.containsKey(neighborCityWeightPair[0])) {
-                    cityIndexToDistanceMap.put(neighborCityWeightPair[0], cityIndexToDistanceMap.get(currentCityWeightPair[0])+neighborCityWeightPair[1]);
-                    cityIndexToPreviousCity.put(neighborCityWeightPair[0], currentCityWeightPair[0]);
-                    int[] updatedNeighborCityWeightPair = new int[]{neighborCityWeightPair[0], cityIndexToDistanceMap.get(neighborCityWeightPair[0])};
-                    shortestPathQueue.add(updatedNeighborCityWeightPair);
-                } else if(cityIndexToDistanceMap.get(neighborCityWeightPair[0]) > cityIndexToDistanceMap.get(currentCityWeightPair[0])+neighborCityWeightPair[1]) {
-                    cityIndexToDistanceMap.put(neighborCityWeightPair[0], cityIndexToDistanceMap.get(currentCityWeightPair[0])+neighborCityWeightPair[1]);
-                    cityIndexToPreviousCity.put(neighborCityWeightPair[0], currentCityWeightPair[0]);
-                }
-            }
-        }
-
-        Deque<Integer> finalCityStack = new ArrayDeque<>();
-        Integer currentCityIndex = endCityIndex;
-        while(currentCityIndex != null) {
-            finalCityStack.push(currentCityIndex);
-            currentCityIndex = cityIndexToPreviousCity.get(currentCityIndex);
-        }
-
-        List<Integer> finalPath = new ArrayList<>();
-        while(!finalCityStack.isEmpty()) {
-            finalPath.add(finalCityStack.pop());
-        }
-
-        return finalPath;
-    }
-
-    public void drawRouteCard(Player player) {
-        player.drawRouteCard((RouteCard) routeCardDeck.pop());
-        if(routeCardDeck.isEmpty()) {
-            routeCardDeck = shuffle(routeCardDiscard);
-            routeCardDiscard = new ArrayList<>();
-        }
-    }
-
-    public void discardUndrawnRoutes(List<RouteCard> routes) {
-        routeCardDiscard.addAll(routes);
-    }
-
-    public boolean buildTrain(Player player, City startCity, City endCity, TrainColor color) {
-        List<Track> validTracks = graph.getTracks(graph.cityIndexMap.get(startCity), graph.cityIndexMap.get(endCity));
-        for(Track track : validTracks) {
-            if(track.color == color || track.color == TrainColor.WILD) {
-                if(playTrainCards(player, color, track.length)){
-                    player.buyTrack(startCity, endCity, track.length, color);
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-    public boolean playTrainCards(Player player, TrainColor color, int quantity) {
-        if(player.spendTrainCards(color, quantity)){
-            for(int i = 0; i < quantity; i++) {
-                trainCardDiscard.add(new TrainCard(color));
-            }
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    public boolean checkRouteDeck() {
-        if(routeCardDeck.isEmpty() && routeCardDiscard.isEmpty()) {
-            return false;
-        } else if(routeCardDeck.isEmpty()) {
-            routeCardDeck = shuffle(routeCardDiscard);
-            routeCardDiscard = new ArrayList<>();
-        }
-        return true;
-    }
-
-    public List<RouteCard> viewThreeRoutes() { 
-        if(!checkRouteDeck()) {
-            return null;
-        }
-        List<RouteCard> threeRoutes = new ArrayList<>();
-        for(int i = 0; i < 3; i++) {
-            threeRoutes.add((RouteCard) routeCardDeck.pop());
-            if(!checkRouteDeck()) {
-                return threeRoutes;
-            }
-        }
-        return threeRoutes;
-    }
-
-    public Deque<Card> shuffle(List<Card> deck) {
+    private Deque<Card> shuffle(List<Card> deck) {
         Collections.shuffle(deck);
         Deque<Card> shuffledDeck = new ArrayDeque<>();
         for(Card card : deck) {

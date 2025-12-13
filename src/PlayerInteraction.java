@@ -11,33 +11,20 @@ public class PlayerInteraction {
     private boolean opponentsDesperate = false;
     private boolean gameOver = false;
 
-    public PlayerInteraction(int numberOfPlayers, int numberOfBots) {
+    /**
+     * Object that lets the user input moves and see results in terminal
+     */
+    public PlayerInteraction() {
         board = new Board();
         players = new ArrayDeque<>();
-        for(int i = 0; i<numberOfPlayers; i++) {
-            players.add(new Player("Player: " + i+1));
-        }
-        for(int i = 0; i<numberOfBots; i++) {
-            opponent = new Opponent(board, "OP: " + i+1);
-            players.add(opponent);
-        }
     }
 
-    private void checkEndGame() {
-        for(Player player : players) {
-            if(player.getTrainsLeft() <= 2) {
-                gameOver = true;
-            }
-        }
-    }
-
-    private void calculateFinalScore(Player player) {
-        player.getRoutes();
-        System.out.println("Player: " + player.getName() + " final score: idk yet tbh");
-    }
-
+    /**
+     * Lets the user run a game of Ticket to Ride in the terminal
+     */
     public void playGame() {
         Scanner sc = new Scanner(System.in);
+        setUpPlayers(sc);
 
         for(Player player : players) {
             if(player instanceof Opponent) {
@@ -48,7 +35,6 @@ public class PlayerInteraction {
                 setUp(player, sc);
             }
         }
-        board.initializeShop();
 
         //while loop for the actual gameplay
         while(!gameOver) {
@@ -60,6 +46,8 @@ public class PlayerInteraction {
                 opponent.setDesperation(opponentsDesperate);
                 displayHand(opponent);
                 displayTrackOwnership(opponent);
+                System.out.println("Deck Size: " + board.getTrainCardDeck().size());
+                System.out.println("Discard Size: " + board.getTrainDiscard().size());
                 opponent.takeOpponentTurn();
                 opponent.endTurn();
                 players.add(currentPlayer);
@@ -73,20 +61,44 @@ public class PlayerInteraction {
             checkEndGame();
         }
 
-        while(!players.isEmpty()) {
-            Player currentPlayer = players.remove();
-            if(currentPlayer instanceof Opponent) {
-                System.out.println("Opponent: " + opponent.getName() + "'s final turn!");
-                Opponent opponent = (Opponent) currentPlayer;
-                opponent.setDesperation(true);
+        for(Player player : players) {
+            if(player instanceof Opponent) {
+                Opponent opponent = (Opponent) player;
+                System.out.println("Opponent: " + opponent.getName() + "'s final turn!");  
                 opponent.takeOpponentTurn();
                 opponent.endTurn();
             } else {
                 displayBoardState();
-                System.out.println(currentPlayer.getName());
-                takePlayerTurn(currentPlayer, sc);
+                System.out.println(player.getName());
+                takePlayerTurn(player, sc);
             }
-            calculateFinalScore(currentPlayer);
+        }
+        calculateFinalScores();
+    }
+
+    private void setUpPlayers(Scanner sc) {
+        System.out.println("How many players would you like to have? (3-5) ");
+        int playerCount = sc.nextInt();
+        while(playerCount < 1 || playerCount > 5) {
+            System.out.println("Invalid player count, must be 3, 4, or 5 ");
+            playerCount = sc.nextInt();
+        }
+
+        System.out.println("How many bots would you like? ");
+        int botCount = sc.nextInt();
+        while(botCount < 1 || botCount > 5) {
+            System.out.println("Invalid bot count, must be 3, 4, or 5 ");
+            playerCount = sc.nextInt();
+        }
+
+        for(int i = 0; i<playerCount-botCount; i++) {
+            System.out.println("Enter a player name: ");
+            String playerName = sc.next();
+            players.add(new Player("Player: " + playerName));
+        }
+        for(int i = 0; i<botCount; i++) {
+            opponent = new Opponent(board, "ROBOCONDUCTOR: " + (i+1));
+            players.add(opponent);
         }
     }
 
@@ -279,8 +291,24 @@ public class PlayerInteraction {
         }
     }
 
+    private void checkEndGame() {
+        for(Player player : players) {
+            if(player.getTrainsLeft() <= 2) {
+                gameOver = true;
+            }
+        }
+    }
+
+    private void calculateFinalScores() {
+        for(Player player : players) {
+            player.calculateFinalScore();
+            System.out.println("Player: " + player.getName() + " final score: " + player.getScore());
+        }
+        
+    }
+
     public static void main(String[] args) {
-        PlayerInteraction io = new PlayerInteraction(0, 1);
+        PlayerInteraction io = new PlayerInteraction();
         io.playGame();
     }
 }

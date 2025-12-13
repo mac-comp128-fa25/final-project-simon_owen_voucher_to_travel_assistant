@@ -13,14 +13,25 @@ public class RoutePath extends RouteCard implements Comparable<RoutePath>{
         }
     }
 
+    /**
+     * @return the priority queue of tracks needed to complete this route
+     */
     public PriorityQueue<Track> getTracks() {
         return tracks;
     }
 
+    /**
+     * Removes a track from the priority queue
+     * @param track the track to remove
+     */
     public void removeTrack(Track track) {
         tracks.remove(track);
     }
 
+    /**
+     * Adds a track to the priority queue
+     * @param track the track to add
+     */
     public void addTrack(Track track) {
         tracks.add(track);
     }

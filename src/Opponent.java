@@ -3,6 +3,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.PriorityQueue;
+import java.util.Collections;
 
 public class Opponent extends Player{
 
@@ -17,13 +18,53 @@ public class Opponent extends Player{
         tracksNeeded = new PriorityQueue<>();
     }
 
+    /**
+     * Draws an opening hand and picks route cards according to the rules of Ticket to Ride
+     */
+    public void opponentSetUp() {
+        for(int i = 0; i < 4; i++) {
+            board.drawTopTrainCard(this);
+        }
+        takeRouteCards(2);
+    }
+
+    /**
+     * @param desperation sets this opponent's desperation to desperate
+     */
     public void setDesperation(boolean desperation) {
         desperate = desperation;
     }
 
-    public void getRecommendedMove(int movesLeft) {
+
+    /**
+     * Has this opponent perform a move based on the number of actions it has left
+     */
+    public void takeOpponentTurn() {
+        while(hasActions()) {
+            getRecommendedMove(getMovesLeft());
+        }
+    }
+
+    /**
+     * Checks if routes have been blocked by another player
+     * @param boughtTrack a track that another player bought
+     */
+    public void recheckRoutes(Track boughtTrack) {
+        for(RoutePath route : tracksNeeded) {
+            for(Track track : route.getTracks()) {
+                if(track.equals(boughtTrack)) {
+                    for(Track newTrack : reroute(track.startCity, track.endCity)) {
+                        route.addTrack(newTrack);
+                    }
+                }
+            }
+        }
+        removeAllInstancesOfTrack(boughtTrack);
+    }
+
+    private void getRecommendedMove(int movesLeft) {
         //1. if player has completed all routes:
-        if(tracksNeeded.isEmpty() && movesLeft >= 2 && board.checkRouteDeck()) { //Add condition for if route card deck is empty
+        if(tracksNeeded.isEmpty() && movesLeft >= 2 && board.checkRouteDeck() && !desperate) {
             takeRouteCards(1);
             makeMoves(2);
             System.out.println("Bot took route cards");
@@ -32,11 +73,19 @@ public class Opponent extends Player{
         else if(decideWhichTrackToBuy()) {
             makeMoves(2);
             System.out.println("Bot played track: "+ getLastTrackBought());
+        } else if(tracksNeeded.isEmpty() && buyRandomTrack()) {
+            makeMoves(2);
+            System.out.println("Bot played track: "+ getLastTrackBought());
         }
         //3. if not able, 
-        else {
+        else if(board.checkTrainCardDeck()) {
             TrainColor cardColor = decideWhichCardToTake();
             System.out.println("Bot drew a " + cardColor + " card");
+        } else if(movesLeft == 2 && buyRandomTrack()) {
+            makeMoves(2);
+        } else {
+            makeMoves(movesLeft);
+            System.out.println("Bot passes the turn because its stupid");
         }
     }
 
@@ -77,6 +126,17 @@ public class Opponent extends Player{
             }
         }
         setUniversalColor(savedColors);
+        return false;
+    }
+
+    private boolean buyRandomTrack() {
+        List<Track> remainingTracks = board.getAvailableTracks();
+        Collections.sort(remainingTracks, new TrackComparator());
+        for(Track smallTrack : remainingTracks) {
+            if(board.buildTrain(this, smallTrack.startCity, smallTrack.endCity, universalWildColor)) {
+                return true;
+            }
+        }
         return false;
     }
 
@@ -129,19 +189,6 @@ public class Opponent extends Player{
         return cardColor; // How do we know which card was removed? Should we have draw top train card return the color of the card? 
     }
 
-    public void takeOpponentTurn() {
-        while(hasActions()) {
-            getRecommendedMove(getMovesLeft());
-        }
-    }
-
-    public void opponentSetUp() {
-        for(int i = 0; i < 4; i++) {
-            board.drawTopTrainCard(this);
-        }
-        takeRouteCards(2);
-    }
-
     private void addRouteToPQ(RouteCard card) {
         List<Track> tracks = findBestPath(card.startCity, card.endCity);
         if(tracks != null) {
@@ -169,7 +216,7 @@ public class Opponent extends Player{
             }
             if(cardsDrawn == 0) {
                 for(int i = 0; i < minimum; i++) {
-                    drawLowestValue(routeCards);
+                    drawGreatestValue(routeCards);
                 }
             }
         }
@@ -186,6 +233,18 @@ public class Opponent extends Player{
         routeCards.remove(lowestScore);
         drawRouteCard(lowestScore);
         addRouteToPQ(lowestScore);
+    }
+
+    private void drawGreatestValue(List<RouteCard> routeCards) {
+        RouteCard greatestScore = new RouteCard(null, null, 0);
+        for(RouteCard route : routeCards) {
+            if(route.pointValue > greatestScore.pointValue) {
+                greatestScore = route;
+            }
+        }
+        routeCards.remove(greatestScore);
+        drawRouteCard(greatestScore);
+        addRouteToPQ(greatestScore);
     }
 
     private boolean takeRoute(RouteCard card) {
@@ -216,18 +275,6 @@ public class Opponent extends Player{
         return overlap;
     }
 
-    public void recheckRoutes(Track boughtTrack) {
-        for(RoutePath route : tracksNeeded) {
-            for(Track track : route.getTracks()) {
-                if(track.equals(boughtTrack)) {
-                    for(Track newTrack : reroute(track.startCity, track.endCity)) {
-                        route.addTrack(newTrack);
-                    }
-                }
-            }
-        }
-        removeAllInstancesOfTrack(boughtTrack);
-    }
 
     private List<Track> reroute(City startCity, City endCity) {
         return findBestPath(endCity, startCity);
@@ -256,21 +303,5 @@ public class Opponent extends Player{
         return tracks;
     }
 
-    // private static void printCityPath(List<Integer> path, Board gameBoard) {
-    //     for(Integer index : path) {
-    //         System.out.println(gameBoard.getCityFromIndex(index));
-    //     }
-    //     System.out.println("--*--*--*--*--*--");
-    // }
-    
-    // public static void main(String[] args) {
-    //     Board gameBoard = new Board();
-    //     printCityPath(gameBoard.dijkstraSearch(City.CALGARY, City.SANFRAN), gameBoard);
-    //     printCityPath(gameBoard.dijkstraSearch(City.SANFRAN, City.CALGARY), gameBoard);
-    //     printCityPath(gameBoard.dijkstraSearch(City.PHOENIX, City.MONTREAL), gameBoard);
-    //     printCityPath(gameBoard.dijkstraSearch(City.MONTREAL, City.PHOENIX), gameBoard);
-    //     printCityPath(gameBoard.dijkstraSearch(City.VANCOUVER, City.MIAMI), gameBoard);
-    //     printCityPath(gameBoard.dijkstraSearch(City.MIAMI, City.VANCOUVER), gameBoard);
-    // }
 
 }

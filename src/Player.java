@@ -27,27 +27,171 @@ public class Player {
         makeScoringGuide();
     }
 
-    private void initializeHand() {
-        hand = new HashMap<>();
-        for(TrainColor color : TrainColor.values()) {
-            hand.put(color, 0);
-        }
-    }
 
-    private void makeScoringGuide() {
-        scoringGuide = new HashMap<>();
-        scoringGuide.put(1,1);
-        scoringGuide.put(2,2);
-        scoringGuide.put(3,4);
-        scoringGuide.put(4,7);
-        scoringGuide.put(5,10);
-        scoringGuide.put(6,15);
-    }
-
+    /**
+     * @return list of tracks the player owns
+     */
     public List<Track> viewOwnedTracks() {
         return ownedTracks;
     }
 
+    /**
+     * @return set of all routes the player has not completed
+     */
+    public Set<RouteCard> getRoutes() {
+        return incompletedRoutes;
+    }
+
+    /**
+     * @return set of all routes the player has completed
+     */
+    public Set<RouteCard> getCompletedRoutes() {
+        return completedRoutes;
+    }
+
+    /**
+     * @return name of player
+     */
+    public String getName() {
+        return name;
+    }
+
+    /**
+     * @return trains the player has left
+     */
+    public int getTrainsLeft() {
+        return trains;
+    }
+
+    /**
+     * @return player's score
+     */
+    public int getScore() {
+        return score;
+    }
+
+    /**
+     * @return true if player has actions left, false otherwise
+     */
+    public boolean hasActions() {
+        return moves > 0;
+    }
+
+    /**
+     * @return amount of moves player has left
+     */
+    public int getMovesLeft() {
+        return moves;
+    }
+
+    /**
+     * @return Players hand, a hashmap where train card colors -> amount in hand
+     */
+    public Map<TrainColor,Integer> getHand() {
+        return hand;
+    }
+
+    /**
+     * resets player's moves
+     */
+    public void endTurn() {
+        moves = 2;
+    }
+
+    /**
+     * @param actionsSpent the amount of moves to use
+     */
+    public void makeMoves(int actionsSpent) {
+        moves -= actionsSpent;
+    }
+    
+
+    /**
+     * @param points amount to increase the total score by
+     */
+    public void addToScore(int points) {
+        score += points;
+    }
+
+    /**
+     * @param card route card to add to the players set of incomplete route cards
+     */
+    public void drawRouteCard(RouteCard card) {
+        incompletedRoutes.add(card);
+    }
+
+    /**
+     * Adds a track to player's list of owned tracks
+     * @param startCity of track
+     * @param endCity of track
+     * @param length of track
+     * @param color of track
+     */
+    public void buyTrack(City startCity, City endCity, int length, TrainColor color) {
+        ownedTracks.add(new Track(startCity, endCity, length, color));
+    }
+    
+    /**
+     * @return last track the player bought
+     */
+    public Track getLastTrackBought() {
+        return ownedTracks.getLast();
+    }
+
+
+    /**
+     * @param card train card to put in the player's hand
+     */
+    public void drawTrainCard(TrainCard card) {
+        hand.put(card.color, hand.get(card.color)+1);
+    }
+
+    /**
+     * Determines if the player can buy a track
+     * @param color of the track
+     * @param quantity of color needed to buy the track
+     * @param board to give spent cards to
+     * @return true if the player can build the track, false otherwise
+     */
+    public boolean spendTrainCards(TrainColor color, int quantity, Board board) {
+        if(hand.get(color) >= quantity && spendTrains(quantity)) {
+            hand.put(color, hand.get(color) - quantity);
+            board.addAmountToDiscard(quantity, color);
+            return true;
+        } else if(color != TrainColor.WILD && hand.get(color) + hand.get(TrainColor.WILD) >= quantity && spendTrains(quantity)) {
+            int leftOver = quantity - hand.get(color);
+            board.addAmountToDiscard(hand.get(color), color);
+            hand.put(color, 0);
+            hand.put(TrainColor.WILD, hand.get(TrainColor.WILD) - leftOver);
+            board.addAmountToDiscard(leftOver, TrainColor.WILD);
+            return true;
+        } else if(hand.get(TrainColor.WILD) >= quantity && spendTrains(quantity)) {
+            hand.put(TrainColor.WILD, hand.get(TrainColor.WILD) - quantity);
+            board.addAmountToDiscard(quantity, TrainColor.WILD);
+            return true;
+        }
+        return false;
+    }
+
+
+    /**
+     * Calculates the final score of player based on tracks owned and route cards
+     * @return the final score
+     */
+    public int calculateFinalScore() {
+        for(RouteCard route : completedRoutes) {
+            score += route.pointValue;
+        }
+        for(RouteCard route : incompletedRoutes) {
+            score -= route.pointValue;
+        }
+        return score;
+    }
+
+    /**
+     * Checks if this player has completed any of their routes, if so it moves the route from the set of incomplete routes to
+     * the set of complete routes.
+     */
     public void checkForCompletedRoutes() {
         Iterator<RouteCard> incompleteRoutesIterator = incompletedRoutes.iterator();
         while(incompleteRoutesIterator.hasNext()) {
@@ -58,6 +202,7 @@ public class Player {
                     if(checkForPathtoCity(startCity, route.endCity, track, new HashSet<>())) {
                         completedRoutes.add(route);
                         incompleteRoutesIterator.remove();
+                        break;
                     }
                 }
             }
@@ -65,14 +210,14 @@ public class Player {
     }
 
     /**
-     * Recursive Helper method to find if there exists a path from one city to another
+     * Recursive Helper method to find if there exists a path from one city to another given the player's tracks
      * @param prevCity The current city the algorithm is looking at, when first called this is the start city.
      * @param targetCity The city the path must end on
      * @param currentTrack The current track the program is looking at
      * @param usedTracks The set of all tracks already on the current path
      * @return true if a path exists prevCity -> targetCity, false otherwise.
      */
-    private boolean checkForPathtoCity(City prevCity, City targetCity, Track currentTrack, HashSet<Track> usedTracks) {
+    public boolean checkForPathtoCity(City prevCity, City targetCity, Track currentTrack, HashSet<Track> usedTracks) {
         City nextCity = currentTrack.getOtherCity(prevCity);
         if(nextCity == targetCity) {
             return true;
@@ -89,88 +234,25 @@ public class Player {
         return false;
     }
 
-    public Set<RouteCard> getRoutes() {
-        return incompletedRoutes;
+    private void initializeHand() {
+        hand = new HashMap<>();
+        for(TrainColor color : TrainColor.values()) {
+            hand.put(color, 0);
+        }
     }
 
-    public Set<RouteCard> getCompletedRoutes() {
-        return completedRoutes;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public int getTrainsLeft() {
-        return trains;
-    }
-
-    public int getScore() {
-        return score;
-    }
-
-    public boolean hasActions() {
-        return moves > 0;
-    }
-
-    public int getMovesLeft() {
-        return moves;
-    }
-
-    public Map<TrainColor,Integer> getHand() {
-        return hand;
-    }
-
-    public void endTurn() {
-        moves = 2;
-    }
-
-    public void makeMoves(int actionsSpent) {
-        moves -= actionsSpent;
-    }
+    private void makeScoringGuide() {
+        scoringGuide = new HashMap<>();
+        scoringGuide.put(1,1);
+        scoringGuide.put(2,2);
+        scoringGuide.put(3,4);
+        scoringGuide.put(4,7);
+        scoringGuide.put(5,10);
+        scoringGuide.put(6,15);
+    } 
     
-    public void addToScore(int points) {
-        score += points;
-    }
-
     private void gainPoints(int length) {
         score += scoringGuide.get(length);
-    }
-
-    public void drawRouteCard(RouteCard card) {
-        incompletedRoutes.add(card);
-    }
-
-    public void buyTrack(City startCity, City endCity, int length, TrainColor color) {
-        ownedTracks.add(new Track(startCity, endCity, length, color));
-    }
-    
-    public Track getLastTrackBought() {
-        return ownedTracks.getLast();
-    }
-
-    public void drawTrainCard(TrainCard card) {
-        if(hand.containsKey(card.color)) {
-            hand.put(card.color, hand.get(card.color)+1);
-        } else {
-            hand.put(card.color, 1);
-        }
-    }
-
-    public boolean spendTrainCards(TrainColor color, int quantity) {
-        if(hand.get(color) >= quantity && spendTrains(quantity)) {
-            hand.put(color, hand.get(color) - quantity);
-            return true;
-        } else if(hand.get(color) + hand.get(TrainColor.WILD) >= quantity && spendTrains(quantity)) {
-            int leftOver = quantity - hand.get(color);
-            hand.put(color, 0);
-            hand.put(TrainColor.WILD, hand.get(TrainColor.WILD) - leftOver);
-            return true;
-        } else if(hand.get(TrainColor.WILD) >= quantity) {
-            hand.put(TrainColor.WILD, hand.get(TrainColor.WILD) - quantity);
-            return true;
-        }
-        return false;
     }
 
     private boolean spendTrains(int quantity) {
