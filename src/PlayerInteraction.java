@@ -73,7 +73,8 @@ public class PlayerInteraction {
                 takePlayerTurn(player, sc);
             }
         }
-        calculateFinalScores();
+        Player winner = calculateFinalScores();
+        System.out.println("Player: " + winner.getName() + " wins the game!!!");
     }
 
     private void setUpPlayers(Scanner sc) {
@@ -299,11 +300,17 @@ public class PlayerInteraction {
         }
     }
 
-    private void calculateFinalScores() {
+    private Player calculateFinalScores() {
+        Player winner = players.peek();
+        winner.calculateFinalScore();
         for(Player player : players) {
             player.calculateFinalScore();
+            if(player.getScore() >= winner.getScore()) {
+                winner = player;
+            }
             System.out.println("Player: " + player.getName() + " final score: " + player.getScore());
         }
+        return winner;
         
     }
 
