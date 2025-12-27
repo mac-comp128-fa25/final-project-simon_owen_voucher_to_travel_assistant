@@ -85,7 +85,9 @@ public class PlayerInteraction {
 
         System.out.println("How many ROBOCONDUCTORS would you like? ");
         int botCount = sc.nextInt();
-        while(botCount < 0 || botCount > playerCount) {
+        while(botCount < 0 || botCount > playerCount
+            
+        ) {
             System.out.println("Invalid ROBOCONDUCTOR count, must be 3, 4, or 5 ");
             playerCount = sc.nextInt();
         }
