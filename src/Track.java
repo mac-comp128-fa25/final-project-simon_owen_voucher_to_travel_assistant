@@ -4,12 +4,16 @@ public class Track{
     public TrainColor color;
     public City startCity;
     public City endCity;
+    public boolean isTunnel;
+    public int bridgeCount;
 
-    public Track(City startCity, City endCity, int length, TrainColor color) {
+    public Track(City startCity, City endCity, int length, TrainColor color, boolean isTunnel, int bridgeCount) {
         this.startCity = startCity;
         this.endCity = endCity;
         this.length = length;
         this.color = color;
+        this.isTunnel = isTunnel;
+        this.bridgeCount = bridgeCount;
     }
 
     public String toString() {

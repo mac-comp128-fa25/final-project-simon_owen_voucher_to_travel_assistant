@@ -31,8 +31,13 @@ public class Graph {
      * @param color the color of the track
      */
     public void addTrack(int i, int j, int length, TrainColor color) {
-        graph[i].add(new Track(indexCityMap.get(i), indexCityMap.get(j), length, color));
-        graph[j].add(new Track(indexCityMap.get(j), indexCityMap.get(i), length, color));
+        graph[i].add(new Track(indexCityMap.get(i), indexCityMap.get(j), length, color, false, 0));
+        graph[j].add(new Track(indexCityMap.get(j), indexCityMap.get(i), length, color, false, 0));
+    }
+
+    public void addTrack(int i, int j, int length, TrainColor color, boolean isTunnel, int bridgeCount) {
+        graph[i].add(new Track(indexCityMap.get(i), indexCityMap.get(j), length, color, isTunnel, bridgeCount));
+        graph[i].add(new Track(indexCityMap.get(j), indexCityMap.get(i), length, color, isTunnel, bridgeCount));
     }
 
 

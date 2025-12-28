@@ -331,6 +331,56 @@ public class Board {
         routeCardDiscard = new ArrayList<>();
     }
 
+    private void initializeEuropeRouteCardDeck() {
+        routeCardDiscard = new ArrayList<>();
+
+        routeCardDiscard.add(new RouteCard(City., City., ));
+        routeCardDiscard.add(new RouteCard(City., City., ));
+        routeCardDiscard.add(new RouteCard(City., City., ));
+        routeCardDiscard.add(new RouteCard(City., City., ));
+        routeCardDiscard.add(new RouteCard(City., City., ));
+        routeCardDiscard.add(new RouteCard(City., City., ));
+        routeCardDiscard.add(new RouteCard(City., City., ));
+        routeCardDiscard.add(new RouteCard(City., City., ));
+        routeCardDiscard.add(new RouteCard(City., City., ));
+        routeCardDiscard.add(new RouteCard(City., City., ));
+        routeCardDiscard.add(new RouteCard(City., City., ));
+        routeCardDiscard.add(new RouteCard(City., City., ));
+        routeCardDiscard.add(new RouteCard(City., City., ));
+        routeCardDiscard.add(new RouteCard(City., City., ));
+        routeCardDiscard.add(new RouteCard(City., City., ));
+        routeCardDiscard.add(new RouteCard(City., City., ));
+        routeCardDiscard.add(new RouteCard(City., City., ));
+        routeCardDiscard.add(new RouteCard(City., City., ));
+        routeCardDiscard.add(new RouteCard(City., City., ));
+        routeCardDiscard.add(new RouteCard(City., City., ));
+        routeCardDiscard.add(new RouteCard(City., City., ));
+        routeCardDiscard.add(new RouteCard(City., City., ));
+        routeCardDiscard.add(new RouteCard(City., City., ));
+        routeCardDiscard.add(new RouteCard(City., City., ));
+        routeCardDiscard.add(new RouteCard(City., City., ));
+        routeCardDiscard.add(new RouteCard(City., City., ));
+        routeCardDiscard.add(new RouteCard(City., City., ));
+        routeCardDiscard.add(new RouteCard(City., City., ));
+        routeCardDiscard.add(new RouteCard(City., City., ));
+        routeCardDiscard.add(new RouteCard(City., City., ));
+        routeCardDiscard.add(new RouteCard(City., City., ));
+        routeCardDiscard.add(new RouteCard(City., City., ));
+        routeCardDiscard.add(new RouteCard(City., City., ));
+        routeCardDiscard.add(new RouteCard(City., City., ));
+        routeCardDiscard.add(new RouteCard(City., City., ));
+        routeCardDiscard.add(new RouteCard(City., City., ));
+        routeCardDiscard.add(new RouteCard(City., City., ));
+        routeCardDiscard.add(new RouteCard(City., City., ));
+        routeCardDiscard.add(new RouteCard(City., City., ));
+        routeCardDiscard.add(new RouteCard(City., City., ));
+        routeCardDiscard.add(new RouteCard(City., City., ));
+        routeCardDiscard.add(new RouteCard(City., City., ));
+        routeCardDiscard.add(new RouteCard(City., City., ));
+        routeCardDiscard.add(new RouteCard(City., City., ));
+        
+    }
+
     private void initializeShop() {
         for(int i = 0; i < shop.length; i++) {
             shop[i] = (TrainCard) trainCardDeck.pop();
@@ -442,9 +492,9 @@ public class Board {
     public void addEuropeTracks() {
         graph.addTrack(graph.cityIndexMap.get(City.EDINBURGH), graph.cityIndexMap.get(City.LONDON), 4, TrainColor.BLACK);
         graph.addTrack(graph.cityIndexMap.get(City.EDINBURGH), graph.cityIndexMap.get(City.LONDON), 4, TrainColor.ORANGE);
-        graph.addTrack(graph.cityIndexMap.get(City.LONDON), graph.cityIndexMap.get(City.DIEPPE), 2, TrainColor.WILD);
-        graph.addTrack(graph.cityIndexMap.get(City.LONDON), graph.cityIndexMap.get(City.DIEPPE), 2, TrainColor.WILD);
-        graph.addTrack(graph.cityIndexMap.get(City.LONDON), graph.cityIndexMap.get(City.AMSTERDAM), 2, TrainColor.WILD);
+        graph.addTrack(graph.cityIndexMap.get(City.LONDON), graph.cityIndexMap.get(City.DIEPPE), 2, TrainColor.WILD, false, 1);
+        graph.addTrack(graph.cityIndexMap.get(City.LONDON), graph.cityIndexMap.get(City.DIEPPE), 2, TrainColor.WILD, false, 1);
+        graph.addTrack(graph.cityIndexMap.get(City.LONDON), graph.cityIndexMap.get(City.AMSTERDAM), 2, TrainColor.WILD, false, 2);
         graph.addTrack(graph.cityIndexMap.get(City.DIEPPE), graph.cityIndexMap.get(City.BREST), 2, TrainColor.ORANGE);
         graph.addTrack(graph.cityIndexMap.get(City.DIEPPE), graph.cityIndexMap.get(City.BRUXELLES), 2, TrainColor.GREEN);
         graph.addTrack(graph.cityIndexMap.get(City.DIEPPE), graph.cityIndexMap.get(City.PARIS), 1, TrainColor.PINK);
@@ -453,9 +503,9 @@ public class Board {
         graph.addTrack(graph.cityIndexMap.get(City.LISBOA), graph.cityIndexMap.get(City.MADRID), 3, TrainColor.PINK);
         graph.addTrack(graph.cityIndexMap.get(City.LISBOA), graph.cityIndexMap.get(City.CADIZ), 2, TrainColor.BLUE);
         graph.addTrack(graph.cityIndexMap.get(City.CADIZ), graph.cityIndexMap.get(City.MADRID), 3, TrainColor.ORANGE);
-        graph.addTrack(graph.cityIndexMap.get(City.MADRID), graph.cityIndexMap.get(City.PAMPLONA), 3, TrainColor.BLACK);
-        graph.addTrack(graph.cityIndexMap.get(City.MADRID), graph.cityIndexMap.get(City.PAMPLONA), 3, TrainColor.WHITE);
-        graph.addTrack(graph.cityIndexMap.get(City.MADRID), graph.cityIndexMap.get(City.BARCELONA), 2, TrainColor.YELLOW);
+        graph.addTrack(graph.cityIndexMap.get(City.MADRID), graph.cityIndexMap.get(City.PAMPLONA), 3, TrainColor.BLACK, true, 0);
+        graph.addTrack(graph.cityIndexMap.get(City.MADRID), graph.cityIndexMap.get(City.PAMPLONA), 3, TrainColor.WHITE, true, 0);
+        graph.addTrack(graph.cityIndexMap.get(City.MADRID), graph.cityIndexMap.get(City.BARCELONA), 2, TrainColor.YELLOW, true, 0);
         graph.addTrack(graph.cityIndexMap.get(City.BARCELONA), graph.cityIndexMap.get(City.BARCELONA), 2, TrainColor.WILD);
         graph.addTrack(graph.cityIndexMap.get(City.BARCELONA), graph.cityIndexMap.get(City.MARCEILLE), 4, TrainColor.WILD);
         graph.addTrack(graph.cityIndexMap.get(City.PAMPLONA), graph.cityIndexMap.get(City.MARCEILLE), 4, TrainColor.RED);
@@ -464,34 +514,34 @@ public class Board {
         graph.addTrack(graph.cityIndexMap.get(City.PARIS), graph.cityIndexMap.get(City.MARCEILLE), 4, TrainColor.WILD);
         graph.addTrack(graph.cityIndexMap.get(City.PARIS), graph.cityIndexMap.get(City.BRUXELLES), 2, TrainColor.YELLOW);
         graph.addTrack(graph.cityIndexMap.get(City.PARIS), graph.cityIndexMap.get(City.BRUXELLES), 2, TrainColor.RED);
-        graph.addTrack(graph.cityIndexMap.get(City.PARIS), graph.cityIndexMap.get(City.ZURICH), 3, TrainColor.WILD);
+        graph.addTrack(graph.cityIndexMap.get(City.PARIS), graph.cityIndexMap.get(City.ZURICH), 3, TrainColor.WILD, true, 0);
         graph.addTrack(graph.cityIndexMap.get(City.PARIS), graph.cityIndexMap.get(City.FRANKFURT), 3, TrainColor.WHITE);
         graph.addTrack(graph.cityIndexMap.get(City.PARIS), graph.cityIndexMap.get(City.FRANKFURT), 3, TrainColor.ORANGE);
         graph.addTrack(graph.cityIndexMap.get(City.BRUXELLES), graph.cityIndexMap.get(City.AMSTERDAM), 1, TrainColor.BLACK);
         graph.addTrack(graph.cityIndexMap.get(City.BRUXELLES), graph.cityIndexMap.get(City.FRANKFURT), 2, TrainColor.BLUE);
         graph.addTrack(graph.cityIndexMap.get(City.AMSTERDAM), graph.cityIndexMap.get(City.FRANKFURT), 2, TrainColor.WHITE);
         graph.addTrack(graph.cityIndexMap.get(City.AMSTERDAM), graph.cityIndexMap.get(City.ESSEN), 3, TrainColor.YELLOW);
-        graph.addTrack(graph.cityIndexMap.get(City.MARCEILLE), graph.cityIndexMap.get(City.ZURICH), 2, TrainColor.PINK);
-        graph.addTrack(graph.cityIndexMap.get(City.MARCEILLE), graph.cityIndexMap.get(City.ROMA), 4, TrainColor.WILD);
-        graph.addTrack(graph.cityIndexMap.get(City.ZURICH), graph.cityIndexMap.get(City.VENEZIA), 2, TrainColor.GREEN);
-        graph.addTrack(graph.cityIndexMap.get(City.ZURICH), graph.cityIndexMap.get(City.MUNCHEN), 2, TrainColor.YELLOW);
+        graph.addTrack(graph.cityIndexMap.get(City.MARCEILLE), graph.cityIndexMap.get(City.ZURICH), 2, TrainColor.PINK, true, 0);
+        graph.addTrack(graph.cityIndexMap.get(City.MARCEILLE), graph.cityIndexMap.get(City.ROMA), 4, TrainColor.WILD, true, 0);
+        graph.addTrack(graph.cityIndexMap.get(City.ZURICH), graph.cityIndexMap.get(City.VENEZIA), 2, TrainColor.GREEN, true, 0);
+        graph.addTrack(graph.cityIndexMap.get(City.ZURICH), graph.cityIndexMap.get(City.MUNCHEN), 2, TrainColor.YELLOW, true, 0);
         graph.addTrack(graph.cityIndexMap.get(City.FRANKFURT), graph.cityIndexMap.get(City.MUNCHEN), 2, TrainColor.PINK);
         graph.addTrack(graph.cityIndexMap.get(City.FRANKFURT), graph.cityIndexMap.get(City.BERLIN), 3, TrainColor.BLACK);
         graph.addTrack(graph.cityIndexMap.get(City.FRANKFURT), graph.cityIndexMap.get(City.BERLIN), 3, TrainColor.RED);
         graph.addTrack(graph.cityIndexMap.get(City.FRANKFURT), graph.cityIndexMap.get(City.ESSEN), 2, TrainColor.GREEN);
-        graph.addTrack(graph.cityIndexMap.get(City.MUNCHEN), graph.cityIndexMap.get(City.VENEZIA), 2, TrainColor.BLUE);
+        graph.addTrack(graph.cityIndexMap.get(City.MUNCHEN), graph.cityIndexMap.get(City.VENEZIA), 2, TrainColor.BLUE, true, 0);
         graph.addTrack(graph.cityIndexMap.get(City.ROMA), graph.cityIndexMap.get(City.VENEZIA), 2, TrainColor.BLACK);
         graph.addTrack(graph.cityIndexMap.get(City.ROMA), graph.cityIndexMap.get(City.BRINDISI), 2, TrainColor.WHITE);
-        graph.addTrack(graph.cityIndexMap.get(City.ROMA), graph.cityIndexMap.get(City.PALERMO), 4, TrainColor.WILD);
-        graph.addTrack(graph.cityIndexMap.get(City.BRINDISI), graph.cityIndexMap.get(City.PALERMO), 3, TrainColor.WILD);
-        graph.addTrack(graph.cityIndexMap.get(City.BRINDISI), graph.cityIndexMap.get(City.ATHINA), 4, TrainColor.WILD);
-        graph.addTrack(graph.cityIndexMap.get(City.PALERMO), graph.cityIndexMap.get(City.SMYRNA), 6, TrainColor.WILD);
+        graph.addTrack(graph.cityIndexMap.get(City.ROMA), graph.cityIndexMap.get(City.PALERMO), 4, TrainColor.WILD, false, 1);
+        graph.addTrack(graph.cityIndexMap.get(City.BRINDISI), graph.cityIndexMap.get(City.PALERMO), 3, TrainColor.WILD, false, 1);
+        graph.addTrack(graph.cityIndexMap.get(City.BRINDISI), graph.cityIndexMap.get(City.ATHINA), 4, TrainColor.WILD, false, 1);
+        graph.addTrack(graph.cityIndexMap.get(City.PALERMO), graph.cityIndexMap.get(City.SMYRNA), 6, TrainColor.WILD, false, 2);
         graph.addTrack(graph.cityIndexMap.get(City.ESSEN), graph.cityIndexMap.get(City.BERLIN), 2, TrainColor.BLUE);
-        graph.addTrack(graph.cityIndexMap.get(City.ESSEN), graph.cityIndexMap.get(City.KOBENHAVN), 3, TrainColor.WILD);
-        graph.addTrack(graph.cityIndexMap.get(City.ESSEN), graph.cityIndexMap.get(City.KOBENHAVN), 3, TrainColor.WILD);
+        graph.addTrack(graph.cityIndexMap.get(City.ESSEN), graph.cityIndexMap.get(City.KOBENHAVN), 3, TrainColor.WILD, false, 1);
+        graph.addTrack(graph.cityIndexMap.get(City.ESSEN), graph.cityIndexMap.get(City.KOBENHAVN), 3, TrainColor.WILD, false, 1);
         graph.addTrack(graph.cityIndexMap.get(City.KOBENHAVN), graph.cityIndexMap.get(City.STOCKHOLM), 3, TrainColor.YELLOW);
         graph.addTrack(graph.cityIndexMap.get(City.KOBENHAVN), graph.cityIndexMap.get(City.STOCKHOLM), 3, TrainColor.WHITE);
-        graph.addTrack(graph.cityIndexMap.get(City.STOCKHOLM), graph.cityIndexMap.get(City.PETROGRAD), 8, TrainColor.WILD);
+        graph.addTrack(graph.cityIndexMap.get(City.STOCKHOLM), graph.cityIndexMap.get(City.PETROGRAD), 8, TrainColor.WILD, true, 0);
         graph.addTrack(graph.cityIndexMap.get(City.MUNCHEN), graph.cityIndexMap.get(City.WIEN), 3, TrainColor.ORANGE);
         graph.addTrack(graph.cityIndexMap.get(City.VENEZIA), graph.cityIndexMap.get(City.ZAGRAB), 2, TrainColor.WILD);
         graph.addTrack(graph.cityIndexMap.get(City.BERLIN), graph.cityIndexMap.get(City.DANZIG), 4, TrainColor.WILD);
@@ -510,7 +560,7 @@ public class Board {
         graph.addTrack(graph.cityIndexMap.get(City.WARSAWA), graph.cityIndexMap.get(City.DANZIG), 2, TrainColor.WILD);
         graph.addTrack(graph.cityIndexMap.get(City.WARSAWA), graph.cityIndexMap.get(City.WILNO), 3, TrainColor.RED);
         graph.addTrack(graph.cityIndexMap.get(City.WARSAWA), graph.cityIndexMap.get(City.KYIV), 4, TrainColor.WILD);
-        graph.addTrack(graph.cityIndexMap.get(City.BUDAPEST), graph.cityIndexMap.get(City.KYIV), 6, TrainColor.WILD);
+        graph.addTrack(graph.cityIndexMap.get(City.BUDAPEST), graph.cityIndexMap.get(City.KYIV), 6, TrainColor.WILD, true, 0);
         graph.addTrack(graph.cityIndexMap.get(City.WILNO), graph.cityIndexMap.get(City.KYIV), 2, TrainColor.WILD);
         graph.addTrack(graph.cityIndexMap.get(City.WILNO), graph.cityIndexMap.get(City.PETROGRAD), 4, TrainColor.BLUE);
         graph.addTrack(graph.cityIndexMap.get(City.WILNO), graph.cityIndexMap.get(City.SMOLENSK), 3, TrainColor.YELLOW);
@@ -520,27 +570,27 @@ public class Board {
         graph.addTrack(graph.cityIndexMap.get(City.MOSKVA), graph.cityIndexMap.get(City.KHARKOV), 4, TrainColor.WILD);
         graph.addTrack(graph.cityIndexMap.get(City.KYIV), graph.cityIndexMap.get(City.KHARKOV), 4, TrainColor.WILD);
         graph.addTrack(graph.cityIndexMap.get(City.KYIV), graph.cityIndexMap.get(City.BUCURESTI), 4, TrainColor.WILD);
-        graph.addTrack(graph.cityIndexMap.get(City.BUDAPEST), graph.cityIndexMap.get(City.BUCURESTI), 4, TrainColor.WILD);
+        graph.addTrack(graph.cityIndexMap.get(City.BUDAPEST), graph.cityIndexMap.get(City.BUCURESTI), 4, TrainColor.WILD, true, 0);
         graph.addTrack(graph.cityIndexMap.get(City.BUDAPEST), graph.cityIndexMap.get(City.SARAJEVO), 3, TrainColor.PINK);
         graph.addTrack(graph.cityIndexMap.get(City.SARAJEVO), graph.cityIndexMap.get(City.ATHINA), 4, TrainColor.GREEN);
         graph.addTrack(graph.cityIndexMap.get(City.ATHINA), graph.cityIndexMap.get(City.SOFIA), 3, TrainColor.PINK);
-        graph.addTrack(graph.cityIndexMap.get(City.SOFIA), graph.cityIndexMap.get(City.SARAJEVO), 2, TrainColor.WILD);
-        graph.addTrack(graph.cityIndexMap.get(City.SOFIA), graph.cityIndexMap.get(City.BUCURESTI), 2, TrainColor.WILD);
-        graph.addTrack(graph.cityIndexMap.get(City.ATHINA), graph.cityIndexMap.get(City.SMYRNA), 2, TrainColor.WILD);
+        graph.addTrack(graph.cityIndexMap.get(City.SOFIA), graph.cityIndexMap.get(City.SARAJEVO), 2, TrainColor.WILD, true, 0);
+        graph.addTrack(graph.cityIndexMap.get(City.SOFIA), graph.cityIndexMap.get(City.BUCURESTI), 2, TrainColor.WILD, true, 0);
+        graph.addTrack(graph.cityIndexMap.get(City.ATHINA), graph.cityIndexMap.get(City.SMYRNA), 2, TrainColor.WILD, false, 1);
         graph.addTrack(graph.cityIndexMap.get(City.SOFIA), graph.cityIndexMap.get(City.CONSTANTINOPLE), 3, TrainColor.BLUE);
         graph.addTrack(graph.cityIndexMap.get(City.BUCURESTI), graph.cityIndexMap.get(City.CONSTANTINOPLE), 3, TrainColor.YELLOW);
         graph.addTrack(graph.cityIndexMap.get(City.BUCURESTI), graph.cityIndexMap.get(City.SEVASTOPOL), 4, TrainColor.WHITE);
         graph.addTrack(graph.cityIndexMap.get(City.KHARKOV), graph.cityIndexMap.get(City.ROSTOV), 2, TrainColor.GREEN);
         graph.addTrack(graph.cityIndexMap.get(City.ROSTOV), graph.cityIndexMap.get(City.SEVASTOPOL), 4, TrainColor.WILD);
         graph.addTrack(graph.cityIndexMap.get(City.ROSTOV), graph.cityIndexMap.get(City.SOCHI), 2, TrainColor.WILD);
-        graph.addTrack(graph.cityIndexMap.get(City.SEVASTOPOL), graph.cityIndexMap.get(City.SOCHI), 2, TrainColor.WILD);
+        graph.addTrack(graph.cityIndexMap.get(City.SEVASTOPOL), graph.cityIndexMap.get(City.SOCHI), 2, TrainColor.WILD, false, 1);
         graph.addTrack(graph.cityIndexMap.get(City.SOCHI), graph.cityIndexMap.get(City.ERZURUM), 3, TrainColor.RED);
-        graph.addTrack(graph.cityIndexMap.get(City.SEVASTOPOL), graph.cityIndexMap.get(City.ERZURUM), 4, TrainColor.WILD);
-        graph.addTrack(graph.cityIndexMap.get(City.SEVASTOPOL), graph.cityIndexMap.get(City.CONSTANTINOPLE), 4, TrainColor.WILD);
+        graph.addTrack(graph.cityIndexMap.get(City.SEVASTOPOL), graph.cityIndexMap.get(City.ERZURUM), 4, TrainColor.WILD, false, 2);
+        graph.addTrack(graph.cityIndexMap.get(City.SEVASTOPOL), graph.cityIndexMap.get(City.CONSTANTINOPLE), 4, TrainColor.WILD, false, 2);
         graph.addTrack(graph.cityIndexMap.get(City.ERZURUM), graph.cityIndexMap.get(City.ANGORA), 3, TrainColor.BLACK);
-        graph.addTrack(graph.cityIndexMap.get(City.CONSTANTINOPLE), graph.cityIndexMap.get(City.ANGORA), 2, TrainColor.WILD);
-        graph.addTrack(graph.cityIndexMap.get(City.SMYRNA), graph.cityIndexMap.get(City.CONSTANTINOPLE), 2, TrainColor.WILD);
-        graph.addTrack(graph.cityIndexMap.get(City.SMYRNA), graph.cityIndexMap.get(City.ANGORA), 3, TrainColor.ORANGE);
+        graph.addTrack(graph.cityIndexMap.get(City.CONSTANTINOPLE), graph.cityIndexMap.get(City.ANGORA), 2, TrainColor.WILD, true, 0);
+        graph.addTrack(graph.cityIndexMap.get(City.SMYRNA), graph.cityIndexMap.get(City.CONSTANTINOPLE), 2, TrainColor.WILD, true, 0);
+        graph.addTrack(graph.cityIndexMap.get(City.SMYRNA), graph.cityIndexMap.get(City.ANGORA), 3, TrainColor.ORANGE, true, 0);
     }
 
     private void checkShop() {

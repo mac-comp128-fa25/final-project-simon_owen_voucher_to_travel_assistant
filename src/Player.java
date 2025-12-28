@@ -140,7 +140,7 @@ public class Player {
      * @param color of track
      */
     public void buyTrack(City startCity, City endCity, int length, TrainColor color) {
-        ownedTracks.add(new Track(startCity, endCity, length, color));
+        ownedTracks.add(new Track(startCity, endCity, length, color, false, 0));
     }
 
     
